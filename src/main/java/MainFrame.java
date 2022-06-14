@@ -1,5 +1,30 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.util.ArrayDeque;
 
 public class MainFrame extends JFrame {
@@ -34,52 +59,61 @@ public class MainFrame extends JFrame {
         menuBar.add(administration);
         JMenuItem newBox = new JMenuItem("Новый бокс");
         administration.add(newBox);
-        newBox.addActionListener(e -> {
-            setMainPanel(getNewBoxPanel());
-        });
+        newBox.addActionListener(e -> setMainPanel(getNewBoxPanel()));
         JMenuItem closeBox = new JMenuItem("Закрыть бокс");
         administration.add(closeBox);
-        closeBox.addActionListener(e -> {
-            setMainPanel(getCloseBoxPanel());
-        });
+        closeBox.addActionListener(e -> setMainPanel(getCloseBoxPanel()));
         JMenuItem changePrice = new JMenuItem("Изменить стоимость аренды");
         administration.add(changePrice);
-        changePrice.addActionListener(e -> {
-            setMainPanel(getChangePricePanel());
-        });
+        changePrice.addActionListener(e -> setMainPanel(getChangePricePanel()));
         administration.add(new JSeparator());
         JMenuItem newBrand = new JMenuItem("Новая марка");
         administration.add(newBrand);
-        newBrand.addActionListener(e -> {
-            setMainPanel(getNewModelJPanel());
-        });
+        newBrand.addActionListener(e -> setMainPanel(getNewModelJPanel()));
         JMenuItem deleteModel = new JMenuItem("Удалить марку");
         administration.add(deleteModel);
-        deleteModel.addActionListener(e -> {
-            setMainPanel(getDeleteModelPanel());
-        });
+        deleteModel.addActionListener(e -> setMainPanel(getDeleteModelPanel()));
 
         JMenu services = new JMenu("Обслуживание клиентов");
         menuBar.add(services);
         JMenuItem startRenting = new JMenuItem("Оформить аренду");
         services.add(startRenting);
-        startRenting.addActionListener(e -> {
-            setMainPanel(getRentIssuePanel());
-        });
+        startRenting.addActionListener(e -> setMainPanel(getRentIssuePanel()));
         JMenuItem finishRenting = new JMenuItem("Закрыть аренду");
         services.add(finishRenting);
+        finishRenting.addActionListener(e -> setMainPanel(getRentClosePanel()));
 
         JMenu selection = new JMenu("Справки");
         menuBar.add(selection);
         JMenuItem clients = new JMenuItem("Клиенты");
         selection.add(clients);
+        clients.addActionListener(e -> setMainPanel(getClientsInfoPanel()));
         JMenuItem boxes = new JMenuItem("Боксы");
         selection.add(boxes);
-        JMenuItem brands = new JMenuItem("Марки");
-        selection.add(brands);
+        boxes.addActionListener(e -> setMainPanel(getBoxesInfoPanel()));
+        JMenuItem models = new JMenuItem("Марки");
+        selection.add(models);
+        models.addActionListener(e -> setMainPanel(getModelsInfoPanel()));
 
         JMenu exit = new JMenu("Выход");
         menuBar.add(exit);
+        exit.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                setVisible(false);
+                dispose();
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {
+
+            }
+
+            @Override
+            public void menuCanceled(MenuEvent e) {
+
+            }
+        });
         getContentPane().add(menuBar, mbc);
 
         mainPanel = new JPanel(new GridLayout(1, 1));
@@ -646,9 +680,7 @@ public class MainFrame extends JFrame {
         });
         JButton back = new JButton("Назад");
         buttonsPanel.add(back);
-        back.addActionListener(e -> {
-            setRentMutablePanel(rentIssuePanels.removeLast());
-        });
+        back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
 
         return mutablePanel;
     }
@@ -721,9 +753,7 @@ public class MainFrame extends JFrame {
         });
         JButton back = new JButton("Назад");
         buttonsPanel.add(back);
-        back.addActionListener(e -> {
-            setRentMutablePanel(rentIssuePanels.removeLast());
-        });
+        back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
 
         return mutablePanel;
     }
@@ -795,9 +825,7 @@ public class MainFrame extends JFrame {
         bc.fill = GridBagConstraints.CENTER;
         bc.anchor = GridBagConstraints.SOUTH;
         mutablePanel.add(back, bc);
-        back.addActionListener(e -> {
-            setRentMutablePanel(rentIssuePanels.removeLast());
-        });
+        back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -822,5 +850,347 @@ public class MainFrame extends JFrame {
         rentIssueMutablePanel.add(newMutable);
         getContentPane().validate();
         getContentPane().repaint();
+    }
+
+    private JPanel getRentClosePanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        JLabel caption = new JLabel("Закрытие аренды", SwingConstants.CENTER);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 1;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(caption, cc);
+
+        JPanel autoPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        GridBagConstraints apc = new GridBagConstraints();
+        apc.weightx = 1;
+        apc.weighty = 1;
+        apc.gridx = 0;
+        apc.gridy = 1;
+        apc.fill = GridBagConstraints.HORIZONTAL;
+        apc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(autoPanel, apc);
+
+        JLabel typeAutoNumber = new JLabel("Введите номер автомобиля", SwingConstants.LEFT);
+        autoPanel.add(typeAutoNumber);
+        JTextField autoNumber = new JTextField();
+        autoPanel.add(autoNumber);
+
+        JButton findAuto = new JButton("Найти автомобиль");
+        GridBagConstraints fac = new GridBagConstraints();
+        fac.weightx = 1;
+        fac.weighty = 1;
+        fac.gridx = 0;
+        fac.gridy = 2;
+        fac.fill = GridBagConstraints.CENTER;
+        fac.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(findAuto, fac);
+
+        JLabel info = new JLabel("", SwingConstants.LEFT);
+        GridBagConstraints ic = new GridBagConstraints();
+        ic.weightx = 1;
+        ic.weighty = 5;
+        ic.gridx = 0;
+        ic.gridy = 3;
+        ic.fill = GridBagConstraints.HORIZONTAL;
+        ic.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(info, ic);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 4;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton save = new JButton("Закрыть аренду");
+        buttonsPanel.add(save);
+        JButton cancel = new JButton("Отмена");
+        buttonsPanel.add(cancel);
+
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+
+        return mainPanel;
+    }
+
+    private JPanel getBoxesInfoPanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        JLabel caption = new JLabel("Справки по боксам", SwingConstants.CENTER);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 1;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(caption, cc);
+
+        JPanel optionPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        GridBagConstraints opc = new GridBagConstraints();
+        opc.weightx = 1;
+        opc.weighty = 3;
+        opc.gridx = 0;
+        opc.gridy = 1;
+        opc.fill = GridBagConstraints.HORIZONTAL;
+        opc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(optionPanel, opc);
+
+        JCheckBox all = new JCheckBox("Все");
+        all.setSelected(true);
+        JCheckBox free = new JCheckBox("Свободные");
+        JCheckBox forModel = new JCheckBox("Обслуживающие марку");
+        optionPanel.add(all);
+        optionPanel.add(free);
+        optionPanel.add(forModel);
+        all.addActionListener(e -> {
+            if (all.isSelected()) {
+                free.setSelected(false);
+                forModel.setSelected(false);
+            }
+        });
+        free.addActionListener(e -> {
+            if (free.isSelected()) {
+                all.setSelected(false);
+            }
+        });
+        forModel.addActionListener(e -> {
+            if (forModel.isSelected()) {
+                all.setSelected(false);
+            }
+        });
+
+        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+        JComboBox<String> models = new JComboBox<>(comboBoxModel);
+        GridBagConstraints mc = new GridBagConstraints();
+        mc.weightx = 1;
+        mc.weighty = 1;
+        mc.gridx = 0;
+        mc.gridy = 2;
+        mc.fill = GridBagConstraints.CENTER;
+        mc.anchor = GridBagConstraints.NORTHWEST;
+        mainPanel.add(models, mc);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 3;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton save = new JButton("Получить справку");
+        buttonsPanel.add(save);
+        JButton cancel = new JButton("Отмена");
+        buttonsPanel.add(cancel);
+
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+
+        return mainPanel;
+    }
+
+    private JPanel getModelsInfoPanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        JLabel caption = new JLabel("Справки по маркам", SwingConstants.CENTER);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 1;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(caption, cc);
+
+        JPanel optionPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        GridBagConstraints opc = new GridBagConstraints();
+        opc.weightx = 1;
+        opc.weighty = 1;
+        opc.gridx = 0;
+        opc.gridy = 1;
+        opc.fill = GridBagConstraints.HORIZONTAL;
+        opc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(optionPanel, opc);
+
+        ButtonGroup options = new ButtonGroup();
+        JRadioButton all = new JRadioButton("Все");
+        all.setSelected(true);
+        JRadioButton forBox = new JRadioButton("Могут быть помещены в бокс");
+        options.add(all);
+        options.add(forBox);
+        optionPanel.add(all);
+        optionPanel.add(forBox);
+
+        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+        JComboBox<String> boxes = new JComboBox<>(comboBoxModel);
+        GridBagConstraints bc = new GridBagConstraints();
+        bc.weightx = 1;
+        bc.weighty = 1;
+        bc.gridx = 0;
+        bc.gridy = 2;
+        bc.fill = GridBagConstraints.CENTER;
+        bc.anchor = GridBagConstraints.NORTHWEST;
+        mainPanel.add(boxes, bc);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 3;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton save = new JButton("Получить справку");
+        buttonsPanel.add(save);
+        JButton cancel = new JButton("Отмена");
+        buttonsPanel.add(cancel);
+
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+
+        return mainPanel;
+    }
+
+    private JPanel getClientsInfoPanel() {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        JLabel caption = new JLabel("Справки по клиентам", SwingConstants.CENTER);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 1;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.gridwidth = 2;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(caption, cc);
+
+        JCheckBox all = new JCheckBox("Все");
+        GridBagConstraints alc = new GridBagConstraints();
+        alc.weightx = 1;
+        alc.weighty = 1;
+        alc.gridx = 0;
+        alc.gridy = 1;
+        alc.anchor = GridBagConstraints.NORTHWEST;
+        mainPanel.add(all, alc);
+
+        JCheckBox forBox = new JCheckBox("Занимающий бокс");
+        GridBagConstraints fbc = new GridBagConstraints();
+        fbc.weightx = 1;
+        fbc.weighty = 1;
+        fbc.gridx = 1;
+        fbc.gridy = 1;
+        fbc.fill = GridBagConstraints.HORIZONTAL;
+        fbc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(forBox, fbc);
+
+        DefaultComboBoxModel<String> boxesModel = new DefaultComboBoxModel<>();
+        JComboBox<String> boxes = new JComboBox<>(boxesModel);
+        GridBagConstraints bc = new GridBagConstraints();
+        bc.weightx = 1;
+        bc.weighty = 1;
+        bc.gridx = 1;
+        bc.gridy = 2;
+        bc.fill = GridBagConstraints.CENTER;
+        bc.anchor = GridBagConstraints.NORTHWEST;
+        mainPanel.add(boxes, bc);
+
+        JCheckBox forAuto = new JCheckBox("Владеющие автомобилем марки");
+        GridBagConstraints fac = new GridBagConstraints();
+        fac.weightx = 1;
+        fac.weighty = 1;
+        fac.gridx = 0;
+        fac.gridy = 3;
+        fac.fill = GridBagConstraints.HORIZONTAL;
+        fac.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(forAuto, fac);
+
+        JCheckBox rentTill = new JCheckBox("Аренда до");
+        GridBagConstraints rtc = new GridBagConstraints();
+        rtc.weightx = 1;
+        rtc.weighty = 1;
+        rtc.gridx = 1;
+        rtc.gridy = 3;
+        rtc.fill = GridBagConstraints.HORIZONTAL;
+        rtc.anchor = GridBagConstraints.PAGE_START;
+        mainPanel.add(rentTill, rtc);
+
+        all.setSelected(true);
+        all.addActionListener(e -> {
+            if (all.isSelected()) {
+                forBox.setSelected(false);
+                forAuto.setSelected(false);
+                rentTill.setSelected(false);
+            }
+        });
+        forBox.addActionListener(e -> {
+            if (forBox.isSelected()) {
+                all.setSelected(false);
+                forAuto.setSelected(false);
+                rentTill.setSelected(false);
+            }
+        });
+        forAuto.addActionListener(e -> {
+            if (forAuto.isSelected()) {
+                all.setSelected(false);
+                forBox.setSelected(false);
+            }
+        });
+        rentTill.addActionListener(e -> {
+            if (rentTill.isSelected()) {
+                all.setSelected(false);
+                forBox.setSelected(false);
+            }
+        });
+
+        DefaultComboBoxModel<String> modelsModel = new DefaultComboBoxModel<>();
+        JComboBox<String> models = new JComboBox<>(modelsModel);
+        GridBagConstraints mc = new GridBagConstraints();
+        mc.weightx = 1;
+        mc.weighty = 1;
+        mc.gridx = 0;
+        mc.gridy = 4;
+        mc.fill = GridBagConstraints.CENTER;
+        mc.anchor = GridBagConstraints.NORTHWEST;
+        mainPanel.add(models, mc);
+
+        JTextField rentDate = new JTextField();
+        GridBagConstraints rdc = new GridBagConstraints();
+        rdc.weightx = 1;
+        rdc.weighty = 1;
+        rdc.gridx = 1;
+        rdc.gridy = 4;
+        rdc.fill = GridBagConstraints.HORIZONTAL;
+        rdc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(rentDate, rdc);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 5;
+        bpc.gridwidth = 2;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton save = new JButton("Получить справку");
+        buttonsPanel.add(save);
+        JButton cancel = new JButton("Отмена");
+        buttonsPanel.add(cancel);
+
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+
+        return mainPanel;
     }
 }
