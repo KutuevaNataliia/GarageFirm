@@ -1,2 +1,6 @@
-package edu.rsatu.garage.entities;public class Client {
+package entities;
+public class Client {
+    private Integer id;
+    private String surname;
+    private String address;
 }

@@ -1,4 +1,4 @@
-package edu.rsatu.garage.common;
+package db;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

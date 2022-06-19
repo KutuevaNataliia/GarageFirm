@@ -1,2 +1,5 @@
-package edu.rsatu.garage.entities;public class Model {
+package entities;
+public class Model {
+    private Integer id;
+    private String name;
 }

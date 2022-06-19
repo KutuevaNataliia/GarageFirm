@@ -1,4 +1,4 @@
-package edu.rsatu.garage.common;
+package db;
 
 import java.util.Collection;
 import java.util.Optional;
