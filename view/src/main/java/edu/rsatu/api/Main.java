@@ -1,3 +1,5 @@
+package edu.rsatu.api;
+
 import javax.swing.*;
 
 public class Main {

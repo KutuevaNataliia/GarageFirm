@@ -1,8 +1,10 @@
-package db.entitiesDao;
-import db.Dao;
-import db.JdbcConnection;
-import entities.Box;
+package edu.rsatu.garage.db.entitiesDao;
 
+import edu.rsatu.garage.db.Dao;
+import edu.rsatu.garage.db.JdbcConnection;
+import edu.rsatu.garage.entities.Box;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,19 +16,17 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//сделал по аналогии, почему-то не работает
-
-public class BoxesDao implements Dao {
+public class BoxesDao implements Dao<Box, Integer> {
 
     private static final Logger LOGGER =
             Logger.getLogger(BoxesDao.class.getName());
-    private final Optional connection;
+    private final Optional<Connection> connection;
 
     public BoxesDao() {
         this.connection = JdbcConnection.getConnection();
     }
 
-    public Optional save(Box box) {
+    public Optional<Integer> save(Box box) {
         String message = "The box to be added should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "INSERT INTO "
@@ -34,15 +34,13 @@ public class BoxesDao implements Dao {
                 + "VALUES(?, ?)";
 
         return connection.flatMap(conn -> {
-            Optional generatedId = Optional.empty();
-
-            //не понимаю, что за prepareStatement
+            Optional<Integer> generatedId = Optional.empty();
             try (PreparedStatement statement =
                          conn.prepareStatement(
                                  sql,
                                  Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, nonNullBox.getBoxNum());
-                statement.setFloat(2, nonNullBox.getRentPrice());
+                statement.setInt(1, nonNullBox.getId());
+                statement.setDouble(2, nonNullBox.getRentPrice());
 
                 int numberOfInsertedRows = statement.executeUpdate();
 
@@ -68,9 +66,9 @@ public class BoxesDao implements Dao {
         });
     }
 
-    public Optional get(int boxNum) {
+    public Optional<Box> get(Integer boxNum) {
         return connection.flatMap(conn -> {
-            Optional box = Optional.empty();
+            Optional<Box> box = Optional.empty();
             String sql = "SELECT * FROM box WHERE customer_id = " + boxNum;
 
             try (Statement statement = conn.createStatement();
@@ -78,7 +76,7 @@ public class BoxesDao implements Dao {
 
                 if (resultSet.next()) {
 
-                    float rentPrice = resultSet.getFloat("rentprice");
+                    double rentPrice = resultSet.getDouble("rentprice");
                     box = Optional.of(
                             new Box(boxNum, rentPrice));
 
@@ -87,23 +85,20 @@ public class BoxesDao implements Dao {
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
-
             return box;
         });
     }
 
-
-    public Collection getAll() {
-        Collection boxes = new ArrayList<>();
+    public Collection<Box> getAll() {
+        Collection<Box> boxes = new ArrayList<>();
         String sql = "SELECT * FROM box";
-
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
 
                 while (resultSet.next()) {
                     int boxNum = resultSet.getInt("boxnum");
-                    float rentPrice = resultSet.getFloat("rentprice");
+                    double rentPrice = resultSet.getDouble("rentprice");
 
                     Box box = new Box(boxNum,rentPrice);
 
@@ -116,7 +111,6 @@ public class BoxesDao implements Dao {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
-
         return boxes;
     }
 
@@ -132,8 +126,8 @@ public class BoxesDao implements Dao {
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
-                statement.setFloat(1, nonNullBox.getRentPrice());
-                statement.setInt(2, nonNullBox.getBoxNum());
+                statement.setDouble(1, nonNullBox.getRentPrice());
+                statement.setInt(2, nonNullBox.getId());
 
                 int numberOfUpdatedRows = statement.executeUpdate();
 
@@ -150,11 +144,9 @@ public class BoxesDao implements Dao {
         String message = "The customer to be deleted should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "DELETE FROM customer WHERE customer_id = ?";
-
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
-
-                statement.setInt(1, nonNullBox.getBoxNum());
+                statement.setInt(1, nonNullBox.getId());
 
                 int numberOfDeletedRows = statement.executeUpdate();
 
@@ -166,9 +158,6 @@ public class BoxesDao implements Dao {
             }
         });
     }
-
-
-
 }
 
 

@@ -1,12 +1,12 @@
-package db;
+package edu.rsatu.garage.db;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public interface Dao {
-    Optional get(int id);
+public interface Dao<T, K> {
+    Optional get(K id);
     Collection getAll();
-    <T> Optional save(T t);
-    <T> void update(T t);
-    <T> void delete(T t);
+    Optional save(T t);
+    void update(T t);
+    void delete(T t);
 }

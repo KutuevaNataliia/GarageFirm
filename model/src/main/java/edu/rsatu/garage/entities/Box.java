@@ -1,29 +1,27 @@
-package entities;
+package edu.rsatu.garage.entities;
+
 public class Box {
-    public Box(Integer boxNum, float rentPrice) {
-        this.boxNum = boxNum;
-        this.rentPrice = rentPrice;
+    private Integer id;
+    private Double rentPrice;
+
+    public Box(Integer id, Double price) {
+        this.id = id;
+        this.rentPrice = price;
     }
 
-    private Integer boxNum;
-    private float rentPrice;
-
-
-    public Integer getBoxNum() {
-        return boxNum;
+    public Integer getId() {
+        return id;
     }
 
-    public float getRentPrice() {
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Double getRentPrice() {
         return rentPrice;
     }
 
-    public void setBoxNum(Integer boxNum) {
-        this.boxNum = boxNum;
-    }
-
-    public void setRentPrice(float rentPrice) {
+    public void setRentPrice(Double rentPrice) {
         this.rentPrice = rentPrice;
     }
-
-
 }

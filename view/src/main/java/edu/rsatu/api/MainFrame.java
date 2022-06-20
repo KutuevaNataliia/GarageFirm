@@ -1,3 +1,5 @@
+package edu.rsatu.api;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
