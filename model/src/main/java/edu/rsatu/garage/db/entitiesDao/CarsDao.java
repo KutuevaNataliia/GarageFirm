@@ -2,7 +2,6 @@ package edu.rsatu.garage.db.entitiesDao;
 
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
-import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Car;
 
 import java.sql.*;
@@ -13,13 +12,14 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CarsDao implements Dao<Car, Integer>{
+public class CarsDao implements Dao<Car, String>{
 
     private static final Logger LOGGER =
             Logger.getLogger(CarsDao.class.getName());
+
     private final Optional<Connection> connection;
 
-    public СarsDao() {
+    public CarsDao() {
         this.connection = JdbcConnection.getConnection();
     }
 
@@ -83,8 +83,6 @@ public class CarsDao implements Dao<Car, Integer>{
                  ResultSet resultSet = statement.executeQuery(sql)) {
 
                 if (resultSet.next()) {
-                    double rentPrice = resultSet.getDouble("rentprice");
-
                     Integer modelId = resultSet.getInt("model_id");
                     Integer clientId = resultSet.getInt("client_id");
                     Integer boxId = resultSet.getInt("boxNum");
@@ -133,7 +131,7 @@ public class CarsDao implements Dao<Car, Integer>{
     }
 
     public void update(Car car) {
-        String message = "The box to be updated should not be null";
+        String message = "The car to be updated should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
 
         String sql = "UPDATE box "
@@ -160,7 +158,7 @@ public class CarsDao implements Dao<Car, Integer>{
 
                 int numberOfUpdatedRows = statement.executeUpdate();
 
-                LOGGER.log(Level.INFO, "Was the customer updated successfully? {0}",
+                LOGGER.log(Level.INFO, "Was the car updated successfully? {0}",
                         numberOfUpdatedRows > 0);
 
             } catch (SQLException ex) {
@@ -170,7 +168,7 @@ public class CarsDao implements Dao<Car, Integer>{
     }
 
     public void delete(Car car) {
-        String message = "The customer to be deleted should not be null";
+        String message = "The car to be deleted should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
         String sql = "DELETE FROM car WHERE carNum = ?";
         connection.ifPresent(conn -> {
@@ -181,7 +179,7 @@ public class CarsDao implements Dao<Car, Integer>{
 
                 int numberOfDeletedRows = statement.executeUpdate();
 
-                LOGGER.log(Level.INFO, "Was the customer deleted successfully? {0}",
+                LOGGER.log(Level.INFO, "Was the car deleted successfully? {0}",
                         numberOfDeletedRows > 0);
 
             } catch (SQLException ex) {

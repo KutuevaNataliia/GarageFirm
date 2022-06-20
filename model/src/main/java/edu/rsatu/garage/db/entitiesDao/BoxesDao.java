@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -30,8 +30,8 @@ public class BoxesDao implements Dao<Box, Integer> {
         String message = "The box to be added should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "INSERT INTO "
-                + "box(rentprice) "
-                + "VALUES(?)";
+                + "box(boxnum, rentprice) "
+                + "VALUES(?, ?)";
 
         return connection.flatMap(conn -> {
             Optional<Integer> generatedId = Optional.empty();
@@ -39,8 +39,8 @@ public class BoxesDao implements Dao<Box, Integer> {
                          conn.prepareStatement(
                                  sql,
                                  Statement.RETURN_GENERATED_KEYS)) {
-                //statement.setInt(1, nonNullBox.getId());
-                statement.setDouble(1, nonNullBox.getRentPrice());
+                statement.setInt(1, nonNullBox.getId());
+                statement.setDouble(2, nonNullBox.getRentPrice());
 
                 int numberOfInsertedRows = statement.executeUpdate();
 
@@ -69,7 +69,7 @@ public class BoxesDao implements Dao<Box, Integer> {
     public Optional<Box> get(Integer boxNum) {
         return connection.flatMap(conn -> {
             Optional<Box> box = Optional.empty();
-            String sql = "SELECT * FROM box WHERE customer_id = " + boxNum;
+            String sql = "SELECT * FROM box WHERE boxNum = " + boxNum;
 
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
@@ -87,8 +87,8 @@ public class BoxesDao implements Dao<Box, Integer> {
         });
     }
 
-    public Collection<Box> getAll() {
-        Collection<Box> boxes = new ArrayList<>();
+    public List<Box> getAll() {
+        List<Box> boxes = new ArrayList<>();
         String sql = "SELECT * FROM box";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
@@ -117,7 +117,7 @@ public class BoxesDao implements Dao<Box, Integer> {
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "UPDATE box "
                 + "SET "
-                + "rentprice = ?, "
+                + "rentprice = ? "
                 + "WHERE "
                 + "boxNum = ?";
 
@@ -129,7 +129,7 @@ public class BoxesDao implements Dao<Box, Integer> {
 
                 int numberOfUpdatedRows = statement.executeUpdate();
 
-                LOGGER.log(Level.INFO, "Was the customer updated successfully? {0}",
+                LOGGER.log(Level.INFO, "Was the box updated successfully? {0}",
                         numberOfUpdatedRows > 0);
 
             } catch (SQLException ex) {
@@ -139,7 +139,7 @@ public class BoxesDao implements Dao<Box, Integer> {
     }
 
     public void delete(Box box) {
-        String message = "The customer to be deleted should not be null";
+        String message = "The box to be deleted should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "DELETE FROM box WHERE boxNum = ?";
         connection.ifPresent(conn -> {
@@ -148,7 +148,7 @@ public class BoxesDao implements Dao<Box, Integer> {
 
                 int numberOfDeletedRows = statement.executeUpdate();
 
-                LOGGER.log(Level.INFO, "Was the customer deleted successfully? {0}",
+                LOGGER.log(Level.INFO, "Was the box deleted successfully? {0}",
                         numberOfDeletedRows > 0);
 
             } catch (SQLException ex) {
