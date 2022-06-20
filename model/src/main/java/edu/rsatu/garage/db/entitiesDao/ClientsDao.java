@@ -18,4 +18,28 @@ import java.util.logging.Logger;
 
 public class ClientsDao implements Dao<Client, Integer> {
 
+    @Override
+    public Optional get(Integer id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Collection getAll() {
+        return null;
+    }
+
+    @Override
+    public Optional save(Client client) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(Client client) {
+
+    }
+
+    @Override
+    public void delete(Client client) {
+
+    }
 }
