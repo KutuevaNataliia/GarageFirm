@@ -4,6 +4,10 @@ public class Model {
     private Integer id;
     private String name;
 
+    public Model(String name) {
+        this.name = name;
+    }
+
     public Model(Integer id, String name) {
         this.id = id;
         this.name = name;

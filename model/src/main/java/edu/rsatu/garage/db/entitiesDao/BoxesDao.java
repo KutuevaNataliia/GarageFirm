@@ -30,8 +30,8 @@ public class BoxesDao implements Dao<Box, Integer> {
         String message = "The box to be added should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "INSERT INTO "
-                + "box(boxnum,rentprice) "
-                + "VALUES(?, ?)";
+                + "box(rentprice) "
+                + "VALUES(?)";
 
         return connection.flatMap(conn -> {
             Optional<Integer> generatedId = Optional.empty();
@@ -39,8 +39,8 @@ public class BoxesDao implements Dao<Box, Integer> {
                          conn.prepareStatement(
                                  sql,
                                  Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, nonNullBox.getId());
-                statement.setDouble(2, nonNullBox.getRentPrice());
+                //statement.setInt(1, nonNullBox.getId());
+                statement.setDouble(1, nonNullBox.getRentPrice());
 
                 int numberOfInsertedRows = statement.executeUpdate();
 
@@ -75,11 +75,9 @@ public class BoxesDao implements Dao<Box, Integer> {
                  ResultSet resultSet = statement.executeQuery(sql)) {
 
                 if (resultSet.next()) {
-
                     double rentPrice = resultSet.getDouble("rentprice");
                     box = Optional.of(
                             new Box(boxNum, rentPrice));
-
                     LOGGER.log(Level.INFO, "Found {0} in database", box.get());
                 }
             } catch (SQLException ex) {

@@ -9,6 +9,10 @@ public class Box {
         this.rentPrice = price;
     }
 
+    public Box(Double rentPrice) {
+        this.rentPrice = rentPrice;
+    }
+
     public Integer getId() {
         return id;
     }

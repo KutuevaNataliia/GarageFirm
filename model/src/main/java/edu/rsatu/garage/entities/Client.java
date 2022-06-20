@@ -6,6 +6,11 @@ public class Client {
     private String surname;
     private String address;
 
+    public Client(String surname, String address) {
+        this.surname = surname;
+        this.address = address;
+    }
+
     public Client(Integer id, String surname, String address) {
         this.id = id;
         this.surname = surname;
