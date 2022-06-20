@@ -141,7 +141,7 @@ public class BoxesDao implements Dao<Box, Integer> {
     public void delete(Box box) {
         String message = "The customer to be deleted should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
-        String sql = "DELETE FROM customer WHERE customer_id = ?";
+        String sql = "DELETE FROM box WHERE boxNum = ?";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setInt(1, nonNullBox.getId());
