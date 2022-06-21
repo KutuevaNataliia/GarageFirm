@@ -1,22 +1,31 @@
 package edu.rsatu.garage.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Car {
     private String number;
-    private Integer modelId;
-    private Integer clientId;
+    private Long modelId;
+    private Long clientId;
     private Integer boxId;
-    private Integer receiptNumber;
-    private Date rentStartDate;
-    private Date rentEndDate;
+    private Long receiptNumber;
+    private LocalDate rentStartDate;
+    private LocalDate rentEndDate;
 
-    public Car(String number, Integer modelId, Integer clientId, Integer boxId, Integer receiptNumber, Date rentStartDate, Date rentEndDate) {
+    public Car(String number, Long modelId, Long clientId, Integer boxId, Long receiptNumber, LocalDate rentStartDate, LocalDate rentEndDate) {
         this.number = number;
         this.modelId = modelId;
         this.clientId = clientId;
         this.boxId = boxId;
         this.receiptNumber = receiptNumber;
+        this.rentStartDate = rentStartDate;
+        this.rentEndDate = rentEndDate;
+    }
+
+    public Car(String number, Long modelId, Long clientId, Integer boxId, LocalDate rentStartDate, LocalDate rentEndDate) {
+        this.number = number;
+        this.modelId = modelId;
+        this.clientId = clientId;
+        this.boxId = boxId;
         this.rentStartDate = rentStartDate;
         this.rentEndDate = rentEndDate;
     }
@@ -29,19 +38,19 @@ public class Car {
         this.number = number;
     }
 
-    public Integer getModelId() {
+    public Long getModelId() {
         return modelId;
     }
 
-    public void setModelId(Integer modelId) {
+    public void setModelId(Long modelId) {
         this.modelId = modelId;
     }
 
-    public Integer getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
-    public void setClientId(Integer clientId) {
+    public void setClientId(Long clientId) {
         this.clientId = clientId;
     }
 
@@ -53,27 +62,27 @@ public class Car {
         this.boxId = boxId;
     }
 
-    public Integer getReceiptNumber() {
+    public Long getReceiptNumber() {
         return receiptNumber;
     }
 
-    public void setReceiptNumber(Integer receiptNumber) {
+    public void setReceiptNumber(Long receiptNumber) {
         this.receiptNumber = receiptNumber;
     }
 
-    public Date getRentStartDate() {
+    public LocalDate getRentStartDate() {
         return rentStartDate;
     }
 
-    public void setRentStartDate(Date rentStartDate) {
+    public void setRentStartDate(LocalDate rentStartDate) {
         this.rentStartDate = rentStartDate;
     }
 
-    public Date getRentEndDate() {
+    public LocalDate getRentEndDate() {
         return rentEndDate;
     }
 
-    public void setRentEndDate(Date rentEndDate) {
+    public void setRentEndDate(LocalDate rentEndDate) {
         this.rentEndDate = rentEndDate;
     }
 }

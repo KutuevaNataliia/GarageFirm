@@ -7,10 +7,11 @@ import edu.rsatu.garage.entities.Model;
 
 public class AdministrationController {
 
-    public void addBox(int boxId, double rentPrice) {
+    public boolean addBox(int boxId, double rentPrice) {
         Box box = new Box(boxId, rentPrice);
         BoxesDao dao = new BoxesDao();
         dao.save(box);
+        return true;
     }
 
     public void deleteBox(int boxNum) {
@@ -19,9 +20,25 @@ public class AdministrationController {
         dao.delete(box);
     }
 
-    public void addModel(String name) {
+    public boolean addModel(String name) {
         Model model = new Model(name);
         ModelsDao modelsDao = new ModelsDao();
+        modelsDao.save(model);
+        return true;
     }
 
+    public void deleteModel(Model model) {
+        ModelsDao modelsDao = new ModelsDao();
+        modelsDao.delete(model);
+    }
+
+    public void increaseBoxPrices(int number) {
+        BoxesDao boxesDao = new BoxesDao();
+        boxesDao.changeAllPrices(number, true);
+    }
+
+    public void decreaseBoxPrices(int number) {
+        BoxesDao boxesDao = new BoxesDao();
+        boxesDao.changeAllPrices(number, false);
+    }
 }

@@ -3,6 +3,7 @@ package edu.rsatu.garage.db.entitiesDao;
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.entities.Model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -155,6 +156,107 @@ public class BoxesDao implements Dao<Box, Integer> {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
+    }
+
+    public void changeAllPrices(int number, boolean increase) {
+        String sql;
+        if (increase) {
+            sql = "UPDATE box set renprice = rentprice * ?";
+        } else {
+            sql = "UPDATE box set renprice = rentprice / ?";
+        }
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                statement.setInt(1, number);
+                statement.executeUpdate();
+                LOGGER.log(Level.INFO, "Was the prices updated successfully");
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+
+    public List<Box> getFreeBoxes() {
+        List<Box> boxes = new ArrayList<>();
+        String sql = "SELECT * FROM box WHERE NOT EXISTS " +
+        "(SELECT car.box_Num FROM car WHERE car.box_Num = box.boxNum)";
+        connection.ifPresent(conn -> {
+            try (Statement statement = conn.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+
+                while (resultSet.next()) {
+                    int boxNum = resultSet.getInt("boxnum");
+                    double rentPrice = resultSet.getDouble("rentprice");
+
+                    Box box = new Box(boxNum,rentPrice);
+
+                    boxes.add(box);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", box);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return boxes;
+    }
+
+    public List<Box> getBoxesForModel(Model model) {
+        ArrayList<Box> boxes = new ArrayList<>();
+        String message = "The model should not be null";
+        Model nonNullModel = Objects.requireNonNull(model, message);
+        String sql = "SELECT * FROM box WHERE boxnum IN " +
+                "(SELECT box_num FROM fit WHERE model_id = ?) ";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                statement.setLong(1, nonNullModel.getId());
+
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    int boxNum = resultSet.getInt("boxnum");
+                    Double rentPrice = resultSet.getDouble("rentprice");
+                    Box box = new Box(boxNum, rentPrice);
+                    boxes.add(box);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", box);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return boxes;
+    }
+
+    public List<Box> getFreeBoxesForModel(Model model) {
+        ArrayList<Box> boxes = new ArrayList<>();
+        String message = "The model should not be null";
+        Model nonNullModel = Objects.requireNonNull(model, message);
+        String sql = "SELECT * FROM box WHERE boxnum IN " +
+                "(SELECT box_num FROM fit WHERE model_id = ?) " +
+                "AND NOT EXISTS (SELECT car.box_Num FROM car WHERE car.box_Num = box.boxNum)";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                statement.setLong(1, nonNullModel.getId());
+
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    int boxNum = resultSet.getInt("boxnum");
+                    Double rentPrice = resultSet.getDouble("rentprice");
+                    Box box = new Box(boxNum, rentPrice);
+                    boxes.add(box);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", box);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return boxes;
     }
 }
 

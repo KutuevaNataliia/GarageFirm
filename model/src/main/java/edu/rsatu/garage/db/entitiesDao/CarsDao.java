@@ -5,6 +5,7 @@ import edu.rsatu.garage.db.JdbcConnection;
 import edu.rsatu.garage.entities.Car;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class CarsDao implements Dao<Car, String>{
         this.connection = JdbcConnection.getConnection();
     }
 
-    public Optional<Integer> save(Car car) {
+    public Optional<Long> save(Car car) {
         String message = "The car to be added should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
         String sql = "INSERT INTO "
@@ -37,26 +38,24 @@ public class CarsDao implements Dao<Car, String>{
                 + "VALUES(?,?,?,?,?,?,?)";
 
         return connection.flatMap(conn -> {
-            Optional<Integer> generatedId = Optional.empty();
+            Optional<Long> generatedReceiptNumber = Optional.empty();
             try (PreparedStatement statement =
                          conn.prepareStatement(
                                  sql,
                                  Statement.RETURN_GENERATED_KEYS)) {
-                //statement.setInt(1, nonNullCar.getId());
                 statement.setString(1, nonNullCar.getNumber());
-                statement.setInt(2, nonNullCar.getModelId());
-                statement.setInt(3, nonNullCar.getClientId());
+                statement.setLong(2, nonNullCar.getModelId());
+                statement.setLong(3, nonNullCar.getClientId());
                 statement.setInt(4, nonNullCar.getBoxId());
-                statement.setInt(5, nonNullCar.getReceiptNumber());
-                statement.setDate(6, (Date) nonNullCar.getRentStartDate());
-                statement.setDate(7, (Date)nonNullCar.getRentEndDate());
+                statement.setObject(6, nonNullCar.getRentStartDate());
+                statement.setObject(7, nonNullCar.getRentEndDate());
                 int numberOfInsertedRows = statement.executeUpdate();
 
-                // Retrieve the auto-generated id
+                // Retrieve the auto-generated receipt number
                 if (numberOfInsertedRows > 0) {
                     try (ResultSet resultSet = statement.getGeneratedKeys()) {
                         if (resultSet.next()) {
-                            generatedId = Optional.of(resultSet.getInt(1));
+                            generatedReceiptNumber = Optional.of(resultSet.getLong(1));
                         }
                     }
                 }
@@ -70,7 +69,7 @@ public class CarsDao implements Dao<Car, String>{
                 LOGGER.log(Level.SEVERE, null, ex);
             }
 
-            return generatedId;
+            return generatedReceiptNumber;
         });
     }
 
@@ -83,12 +82,12 @@ public class CarsDao implements Dao<Car, String>{
                  ResultSet resultSet = statement.executeQuery(sql)) {
 
                 if (resultSet.next()) {
-                    Integer modelId = resultSet.getInt("model_id");
-                    Integer clientId = resultSet.getInt("client_id");
+                    Long modelId = resultSet.getLong("model_id");
+                    Long clientId = resultSet.getLong("client_id");
                     Integer boxId = resultSet.getInt("boxNum");
-                    Integer receiptNumber = resultSet.getInt("rectNum");
-                   java.util.Date rentStartDate =  resultSet.getDate("rental_start_date");
-                   java.util.Date rentEndDate = resultSet.getDate("rental_end_date");
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
                     car = Optional.of(
                             new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate));
                     LOGGER.log(Level.INFO, "Found {0} in database", car.get());
@@ -109,12 +108,12 @@ public class CarsDao implements Dao<Car, String>{
 
                 while (resultSet.next()) {
                     String number = resultSet.getString("carNum");
-                    Integer modelId = resultSet.getInt("model_id");
-                    Integer clientId = resultSet.getInt("client_id");
+                    Long modelId = resultSet.getLong("model_id");
+                    Long clientId = resultSet.getLong("client_id");
                     Integer boxId = resultSet.getInt("boxNum");
-                    Integer receiptNumber = resultSet.getInt("rectNum");
-                    java.util.Date rentStartDate =  resultSet.getDate("rental_start_date");
-                    java.util.Date rentEndDate = resultSet.getDate("rental_end_date");
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
 
                     Car car = new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate);
 
@@ -149,12 +148,12 @@ public class CarsDao implements Dao<Car, String>{
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
                 statement.setString(1, nonNullCar.getNumber());
-                statement.setInt(2, nonNullCar.getModelId());
-                statement.setInt(3, nonNullCar.getClientId());
+                statement.setLong(2, nonNullCar.getModelId());
+                statement.setLong(3, nonNullCar.getClientId());
                 statement.setInt(4, nonNullCar.getBoxId());
-                statement.setInt(5, nonNullCar.getReceiptNumber());
-                statement.setDate(6, (Date) nonNullCar.getRentStartDate());
-                statement.setDate(7, (Date)nonNullCar.getRentEndDate());
+                statement.setLong(5, nonNullCar.getReceiptNumber());
+                statement.setObject(6, nonNullCar.getRentStartDate());
+                statement.setObject(7, nonNullCar.getRentEndDate());
 
                 int numberOfUpdatedRows = statement.executeUpdate();
 

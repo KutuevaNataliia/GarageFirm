@@ -2,13 +2,16 @@ package edu.rsatu.garage.db.entitiesDao;
 
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
+import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Client;
+import edu.rsatu.garage.entities.Model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -143,7 +146,7 @@ public class ClientsDao implements Dao<Client, Long> {
 
     @Override
     public void delete(Client client) {
-        String message = "The cient to be deleted should not be null";
+        String message = "The client to be deleted should not be null";
         Client nonNullClient = Objects.requireNonNull(client, message);
         String sql = "DELETE FROM client WHERE id = ?";
         connection.ifPresent(conn -> {
@@ -159,5 +162,132 @@ public class ClientsDao implements Dao<Client, Long> {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
+    }
+
+    public Optional<Client> getClientForBox(Box box) {
+        String message = "The box should not be null";
+        Box nonNullBox = Objects.requireNonNull(box, message);
+        return connection.flatMap(conn -> {
+            Optional<Client> client = Optional.empty();
+            String sql = "SELECT * FROM client WHERE id IN" +
+            "(SELECT car.client_id FROM car WHERE car.boxNum = ?)";
+
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                 statement.setInt(1, nonNullBox.getId());
+
+                 ResultSet resultSet = statement.executeQuery(sql);
+                if (resultSet.next()) {
+                    Long id = resultSet.getLong("id");
+                    String surname = resultSet.getString("surname");
+                    String address = resultSet.getString("address");
+                    client = Optional.of(new Client(id, surname, address));
+                    LOGGER.log(Level.INFO, "Found {0} in database", client.get());
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+            return client;
+        });
+    }
+
+    public List<Client> getClientsForModel(Model model) {
+        String message = "The model should not be null";
+        Model nonNullModel = Objects.requireNonNull(model, message);
+        List<Client> clients = new ArrayList<>();
+        String sql = "SELECT * FROM client WHERE id IN" +
+                "(SELECT client_id FROM car WHERE model_id = ?)";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setLong(1, nonNullModel.getId());
+
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("id");
+                    String surname = resultSet.getString("surname");
+                    String address = resultSet.getString("address");
+
+                    Client client = new Client(id, surname, address);
+
+                    clients.add(client);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", client);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return clients;
+    }
+
+    public List<Client> getClientsForDate(LocalDate rentEndDate) {
+        String message = "The date should not be null";
+        LocalDate nonNullDate = Objects.requireNonNull(rentEndDate, message);
+        List<Client> clients = new ArrayList<>();
+        String sql = "SELECT * FROM client WHERE id IN " +
+                "(SELECT client_id FROM car WHERE rental_end_date <= ?";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setObject(1, nonNullDate);
+
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("id");
+                    String surname = resultSet.getString("surname");
+                    String address = resultSet.getString("address");
+
+                    Client client = new Client(id, surname, address);
+
+                    clients.add(client);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", client);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return clients;
+    }
+
+    public List<Client> getClientsForModelDate(Model model, LocalDate date) {
+        String message1 = "The date should not be null";
+        Model nonNullModel = Objects.requireNonNull(model, message1);
+        String message2 = "The model should not be null";
+        LocalDate nonNullDate = Objects.requireNonNull(date, message2);
+        List<Client> clients = new ArrayList<>();
+        String sql = "SELECT * FROM client WHERE id IN " +
+                "(SELECT client_id FROM car WHERE model_id = ?)" +
+                "AND id IN (SELECT client_id FROM car WHERE rental_end_date <= ? ";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setLong(1, nonNullModel.getId());
+                statement.setObject(2, nonNullDate);
+
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    long id = resultSet.getLong("id");
+                    String surname = resultSet.getString("surname");
+                    String address = resultSet.getString("address");
+
+                    Client client = new Client(id, surname, address);
+
+                    clients.add(client);
+
+                    LOGGER.log(Level.INFO, "Found {0} in database", client);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return clients;
     }
 }
