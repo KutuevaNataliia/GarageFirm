@@ -2,7 +2,7 @@ package edu.rsatu.garage.entities;
 
 public class Client {
 
-    private Integer id;
+    private Long id;
     private String surname;
     private String address;
 
@@ -11,17 +11,17 @@ public class Client {
         this.address = address;
     }
 
-    public Client(Integer id, String surname, String address) {
+    public Client(Long id, String surname, String address) {
         this.id = id;
         this.surname = surname;
         this.address = address;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
