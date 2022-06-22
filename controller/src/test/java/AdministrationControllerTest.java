@@ -1,7 +1,9 @@
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 import org.junit.jupiter.api.Test;
 import edu.rsatu.garage.controller.AdministrationController;
@@ -11,11 +13,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AdministrationControllerTest {
 
+    public void clean(){
+        BoxesDao boxesDao = new BoxesDao();
+        ModelsDao modelsDao = new ModelsDao();
+        ClientsDao clientsDao =  new ClientsDao();
+
+        List<Box> boxes = boxesDao.getAll();
+        List<Model> models = modelsDao.getAll();
+        List<Client> clients = clientsDao.getAll();
+
+        for(Box box: boxes){
+            boxesDao.delete(box);
+        }
+        for(Model model: models){
+            modelsDao.delete(model);
+        }
+        for(Client client: clients){
+            clientsDao.delete(client);
+        }
+    }
     @Test
     public void addBox() {
         AdministrationController administrationController = new AdministrationController();
         BoxesDao dao = new BoxesDao();
-        if(dao.get(1).equals(null))administrationController.deleteBox(1);
+        clean();
         administrationController.addBox(1,1000.00);
         Box box = dao.get(1).orElse(null);
         assertNotNull(box);
@@ -27,7 +48,9 @@ public class AdministrationControllerTest {
 
     @Test
     public void deleteBox() {
+        clean();
         AdministrationController administrationController = new AdministrationController();
+        administrationController.addBox(1,1000.00);
         administrationController.deleteBox(1);
         BoxesDao dao = new BoxesDao();
         Box box = dao.get(1).orElse(null);
@@ -36,13 +59,16 @@ public class AdministrationControllerTest {
 
     @Test
     public void updateBox() {
+        clean();
+        AdministrationController administrationController = new AdministrationController();
+        administrationController.addBox(1,1000.00);
         BoxesDao dao = new BoxesDao();
-        Box box = dao.get(5).orElse(null);
+        Box box = dao.get(1).orElse(null);
         if (box != null) {
             box.setRentPrice(1050.00);
         }
         dao.update(box);
-        Box newBox = dao.get(5).orElse(null);
+        Box newBox = dao.get(1).orElse(null);
         assertNotNull(newBox);
         assertEquals(1050, newBox.getRentPrice());
     }
@@ -53,6 +79,7 @@ public class AdministrationControllerTest {
     //всех марок БД
     @Test
     public void addModel(){
+        clean();
         AdministrationController administrationController = new AdministrationController();
         ModelsDao dao = new ModelsDao();
         administrationController.addModel("Ford");
@@ -64,6 +91,7 @@ public class AdministrationControllerTest {
     }
     @Test
     public void deleteModel() {
+        clean();
         AdministrationController administrationController = new AdministrationController();
         ModelsDao dao = new ModelsDao();
         List<Model> models = dao.getAll();
@@ -75,25 +103,13 @@ public class AdministrationControllerTest {
 
     @Test
     public void increaseBoxPrices() {
+        clean();
+
         AdministrationController administrationController = new AdministrationController();
         BoxesDao boxesDao = new BoxesDao();
 
-        if(boxesDao.get(1).equals(null))
         administrationController.addBox(1,1000.00);
-        else
-        {
-            Box box = boxesDao.get(1).orElse(null);
-            box.setRentPrice(1000.00);
-            boxesDao.update(box);
-        }
-        if(boxesDao.get(2).equals(null))
         administrationController.addBox(2,500);
-        else
-        {
-            Box box = boxesDao.get(2).orElse(null);
-            box.setRentPrice(500.00);
-            boxesDao.update(box);
-        }
         administrationController.increaseBoxPrices(2);
         List<Box> boxes = boxesDao.getAll();
         assertEquals(2000,boxes.get(0).getRentPrice());
@@ -103,25 +119,13 @@ public class AdministrationControllerTest {
 
     @Test
     public void decreaseBoxPrices() {
+        clean();
         AdministrationController administrationController = new AdministrationController();
         BoxesDao boxesDao = new BoxesDao();
 
-        if(boxesDao.get(1).equals(null))
-            administrationController.addBox(1,1000.00);
-        else
-        {
-            Box box = boxesDao.get(1).orElse(null);
-            box.setRentPrice(1000.00);
-            boxesDao.update(box);
-        }
-        if(boxesDao.get(2).equals(null))
-            administrationController.addBox(2,500);
-        else
-        {
-            Box box = boxesDao.get(2).orElse(null);
-            box.setRentPrice(500.00);
-            boxesDao.update(box);
-        }
+        administrationController.addBox(1,1000.00);
+        administrationController.addBox(2,500);
+
         administrationController.decreaseBoxPrices(2);
         List<Box> boxes = boxesDao.getAll();
         assertEquals(500,boxes.get(0).getRentPrice());

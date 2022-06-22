@@ -1,52 +1,52 @@
 package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 public class AdministrationController {
 
+    private BoxesDao boxesDao = new BoxesDao();
+    private ModelsDao modelsDao = new ModelsDao();
+    private ClientsDao clientsDao = new ClientsDao();
+
     public boolean addBox(int boxId, double rentPrice) {
         Box box = new Box(boxId, rentPrice);
-        BoxesDao dao = new BoxesDao();
-        dao.save(box);
+        boxesDao.save(box);
         return true;
     }
 
     public void deleteBox(int boxNum) {
-        BoxesDao dao = new BoxesDao();
-        Box box = dao.get(boxNum).orElse(null);
-        dao.delete(box);
+        Box box = boxesDao.get(boxNum).orElse(null);
+        boxesDao.delete(box);
     }
 
     public boolean addModel(String name) {
         Model model = new Model(name);
-        ModelsDao modelsDao = new ModelsDao();
         modelsDao.save(model);
         return true;
     }
 
     public void deleteModel(Model model) {
-        ModelsDao modelsDao = new ModelsDao();
         modelsDao.delete(model);
     }
-
-    /*
-    public void deleteModel(Long id) {
-        ModelsDao modelsDao = new ModelsDao();
-        Model model = modelsDao.get(id).orElse(null);
-        modelsDao.delete(model);
-    }
-    */
 
     public void increaseBoxPrices(int number) {
-        BoxesDao boxesDao = new BoxesDao();
         boxesDao.changeAllPrices(number, true);
     }
 
     public void decreaseBoxPrices(int number) {
-        BoxesDao boxesDao = new BoxesDao();
         boxesDao.changeAllPrices(number, false);
     }
+
+    public boolean addClient(String surname, String address) {
+        Client client = new Client(surname,address);
+        clientsDao.save(client);
+        return true;
+    }
+
+
 }

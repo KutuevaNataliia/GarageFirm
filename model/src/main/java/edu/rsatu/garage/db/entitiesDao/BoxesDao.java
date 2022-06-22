@@ -179,7 +179,7 @@ public class BoxesDao implements Dao<Box, Integer> {
     public List<Box> getFreeBoxes() {
         List<Box> boxes = new ArrayList<>();
         String sql = "SELECT * FROM box WHERE NOT EXISTS " +
-        "(SELECT car.box_Num FROM car WHERE car.box_Num = box.boxNum)";
+        "(SELECT car.boxNum FROM car WHERE car.boxNum = box.boxNum)";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
