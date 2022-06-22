@@ -37,7 +37,12 @@ public class AdministrationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         BoxesDao dao = new BoxesDao();
         clean();
-        administrationController.addBox(1,1000.00);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,1000.00, List.of(model));
         Box box = dao.get(1).orElse(null);
         assertNotNull(box);
         assertEquals(1000.00, box.getRentPrice());
@@ -50,9 +55,14 @@ public class AdministrationControllerTest {
     public void deleteBox() {
         clean();
         AdministrationController administrationController = new AdministrationController();
-        administrationController.addBox(1,1000.00);
-        administrationController.deleteBox(1);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,1000.00, List.of(model));
         BoxesDao dao = new BoxesDao();
+        administrationController.deleteBox(dao.get(1).orElse(null));
         Box box = dao.get(1).orElse(null);
         assertNull(box);
     }
@@ -61,7 +71,12 @@ public class AdministrationControllerTest {
     public void updateBox() {
         clean();
         AdministrationController administrationController = new AdministrationController();
-        administrationController.addBox(1,1000.00);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,1000.00, List.of(model));
         BoxesDao dao = new BoxesDao();
         Box box = dao.get(1).orElse(null);
         if (box != null) {
@@ -95,7 +110,7 @@ public class AdministrationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         ModelsDao dao = new ModelsDao();
         List<Model> models = dao.getAll();
-        if(!models.get(0).equals(null))
+        assertNotNull(models.get(0));
         administrationController.deleteModel(models.get(0));
         Model m = dao.get(models.get(0).getId()).orElse(null);
         assertNull(m);
@@ -108,8 +123,13 @@ public class AdministrationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         BoxesDao boxesDao = new BoxesDao();
 
-        administrationController.addBox(1,1000.00);
-        administrationController.addBox(2,500);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,1000.00, List.of(model));
+        administrationController.addBox(2,500, List.of(model));
         administrationController.increaseBoxPrices(2);
         List<Box> boxes = boxesDao.getAll();
         assertEquals(2000,boxes.get(0).getRentPrice());
@@ -123,8 +143,13 @@ public class AdministrationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         BoxesDao boxesDao = new BoxesDao();
 
-        administrationController.addBox(1,1000.00);
-        administrationController.addBox(2,500);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,1000.00, List.of(model));
+        administrationController.addBox(2,500, List.of(model));
 
         administrationController.decreaseBoxPrices(2);
         List<Box> boxes = boxesDao.getAll();

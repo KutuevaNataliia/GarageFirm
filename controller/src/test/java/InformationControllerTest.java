@@ -40,8 +40,13 @@ public class InformationControllerTest {
         clean();
         AdministrationController administrationController = new AdministrationController();
         InformationController informationController = new InformationController();
-        administrationController.addBox(1,2000);
-        administrationController.addBox(2,3000);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,2000, List.of(model));
+        administrationController.addBox(2,3000, List.of(model));
         List<Box> boxes = informationController.getAllBoxes();
         assertEquals(2000,boxes.get(0).getRentPrice());
         assertEquals(3000,boxes.get(1).getRentPrice());
@@ -52,8 +57,13 @@ public class InformationControllerTest {
         clean();
         AdministrationController administrationController = new AdministrationController();
         InformationController informationController = new InformationController();
-        administrationController.addBox(1,2000);
-        administrationController.addBox(2,3000);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,2000, List.of(model));
+        administrationController.addBox(2,3000, List.of(model));
         List<Box> boxes = informationController.getFreeBoxes();
         assertEquals(boxes.size(),2);
 
