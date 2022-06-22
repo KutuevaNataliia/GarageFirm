@@ -109,6 +109,7 @@ public class AdministrationControllerTest {
         clean();
         AdministrationController administrationController = new AdministrationController();
         ModelsDao dao = new ModelsDao();
+        administrationController.addModel("Ford");
         List<Model> models = dao.getAll();
         assertNotNull(models.get(0));
         administrationController.deleteModel(models.get(0));

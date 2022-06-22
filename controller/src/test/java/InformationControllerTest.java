@@ -1,28 +1,41 @@
 
 import edu.rsatu.garage.controller.AdministrationController;
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.CarsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 import org.junit.jupiter.api.Test;
 import edu.rsatu.garage.controller.InformationController;
+
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
+
+
 public class InformationControllerTest {
 
+    AdministrationController administrationController = new AdministrationController();
+
+    InformationController informationController = new InformationController();
+
+    BoxesDao boxesDao = new BoxesDao();
+    ModelsDao modelsDao = new ModelsDao();
+    ClientsDao clientsDao =  new ClientsDao();
+    CarsDao carsDao = new CarsDao();
+
     public void clean(){
-        BoxesDao boxesDao = new BoxesDao();
-        ModelsDao modelsDao = new ModelsDao();
-        ClientsDao clientsDao =  new ClientsDao();
 
         List<Box> boxes = boxesDao.getAll();
         List<Model> models = modelsDao.getAll();
         List<Client> clients = clientsDao.getAll();
+        Collection<Car> cars = carsDao.getAll();
 
         for(Box box: boxes){
             boxesDao.delete(box);
@@ -32,6 +45,9 @@ public class InformationControllerTest {
         }
         for(Client client: clients){
             clientsDao.delete(client);
+        }
+        for(Car car: cars){
+            carsDao.delete(car);
         }
     }
 
