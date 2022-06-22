@@ -161,9 +161,9 @@ public class BoxesDao implements Dao<Box, Integer> {
     public void changeAllPrices(int number, boolean increase) {
         String sql;
         if (increase) {
-            sql = "UPDATE box set renprice = rentprice * ?";
+            sql = "UPDATE box set rentprice = rentprice * ?";
         } else {
-            sql = "UPDATE box set renprice = rentprice / ?";
+            sql = "UPDATE box set rentprice = rentprice / ?";
         }
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {

@@ -32,6 +32,14 @@ public class AdministrationController {
         modelsDao.delete(model);
     }
 
+    /*
+    public void deleteModel(Long id) {
+        ModelsDao modelsDao = new ModelsDao();
+        Model model = modelsDao.get(id).orElse(null);
+        modelsDao.delete(model);
+    }
+    */
+
     public void increaseBoxPrices(int number) {
         BoxesDao boxesDao = new BoxesDao();
         boxesDao.changeAllPrices(number, true);
