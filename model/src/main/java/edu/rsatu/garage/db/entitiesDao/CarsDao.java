@@ -31,11 +31,10 @@ public class CarsDao implements Dao<Car, String>{
                 + "car (carNum,"
                 + "rental_start_date,"
                 + "rental_end_date,"
-                + "rectNum, "
                 + "boxNum, "
                 + "model_id, "
                 + "client_id) "
-                + "VALUES(?,?,?,?,?,?,?)";
+                + "VALUES(?,?,?,?,?,?)";
 
         return connection.flatMap(conn -> {
             Optional<Long> generatedReceiptNumber = Optional.empty();
@@ -47,8 +46,8 @@ public class CarsDao implements Dao<Car, String>{
                 statement.setLong(2, nonNullCar.getModelId());
                 statement.setLong(3, nonNullCar.getClientId());
                 statement.setInt(4, nonNullCar.getBoxId());
-                statement.setObject(6, nonNullCar.getRentStartDate());
-                statement.setObject(7, nonNullCar.getRentEndDate());
+                statement.setObject(5, nonNullCar.getRentStartDate());
+                statement.setObject(6, nonNullCar.getRentEndDate());
                 int numberOfInsertedRows = statement.executeUpdate();
 
                 // Retrieve the auto-generated receipt number
@@ -133,7 +132,7 @@ public class CarsDao implements Dao<Car, String>{
         String message = "The car to be updated should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
 
-        String sql = "UPDATE box "
+        String sql = "UPDATE car "
                 + "SET "
                 + "rental_start_date = ?, "
                 + "rental_end_date = ?, "
@@ -172,10 +171,7 @@ public class CarsDao implements Dao<Car, String>{
         String sql = "DELETE FROM car WHERE carNum = ?";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
-
                 statement.setString(1, nonNullCar.getNumber());
-
-
                 int numberOfDeletedRows = statement.executeUpdate();
 
                 LOGGER.log(Level.INFO, "Was the car deleted successfully? {0}",
