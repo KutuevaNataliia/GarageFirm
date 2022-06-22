@@ -1,26 +1,33 @@
 package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
+import java.util.List;
+
 public class AdministrationController {
 
     private BoxesDao boxesDao = new BoxesDao();
     private ModelsDao modelsDao = new ModelsDao();
     private ClientsDao clientsDao = new ClientsDao();
+    private BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
 
-    public boolean addBox(int boxId, double rentPrice) {
+    public boolean addBox(int boxId, double rentPrice, List<Model> models) {
+        //надо бы ещё сделать исключение, если список моделей null или пустой
         Box box = new Box(boxId, rentPrice);
         boxesDao.save(box);
+        boxesModelsDao.addModelsForBox(box, models);
         return true;
     }
 
-    public void deleteBox(int boxNum) {
-        Box box = boxesDao.get(boxNum).orElse(null);
+    public void deleteBox(Box box) {
+        List<Model> models = boxesModelsDao.getModelsForBox(box);
+        boxesModelsDao.deleteModelsFromBox(box, models);
         boxesDao.delete(box);
     }
 

@@ -1,6 +1,7 @@
 import edu.rsatu.garage.controller.AdministrationController;
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.CarsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
@@ -23,6 +24,7 @@ public class RentControllerTest {
     ModelsDao modelsDao = new ModelsDao();
     ClientsDao clientsDao =  new ClientsDao();
     CarsDao carsDao = new CarsDao();
+    BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
 
 
     AdministrationController administrationController = new AdministrationController();
@@ -37,6 +39,10 @@ public class RentControllerTest {
         List<Client> clients = clientsDao.getAll();
         Collection<Car> cars = carsDao.getAll();
 
+        boxesModelsDao.deleteAll();
+        for(Car car: cars){
+            carsDao.delete(car);
+        }
         for(Box box: boxes){
             boxesDao.delete(box);
         }
@@ -46,15 +52,17 @@ public class RentControllerTest {
         for(Client client: clients){
             clientsDao.delete(client);
         }
-        for(Car car: cars){
-            carsDao.delete(car);
-        }
     }
 
     @Test
     public void addCar() {
         clean();
-        administrationController.addBox(1,500);
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,500, List.of(model));
         administrationController.addClient("Sharov","AdressSharova");
         administrationController.addModel("Ford");
         List<Client> clients = informationController.getAllClients();

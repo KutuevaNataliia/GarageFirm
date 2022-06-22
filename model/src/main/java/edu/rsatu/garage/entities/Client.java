@@ -1,5 +1,7 @@
 package edu.rsatu.garage.entities;
 
+import java.util.Objects;
+
 public class Client {
 
     private Long id;
@@ -39,5 +41,18 @@ public class Client {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(id, client.id) && surname.equals(client.surname) && address.equals(client.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, surname, address);
     }
 }

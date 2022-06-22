@@ -1,5 +1,6 @@
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
@@ -17,7 +18,9 @@ public class AdministrationControllerTest {
         BoxesDao boxesDao = new BoxesDao();
         ModelsDao modelsDao = new ModelsDao();
         ClientsDao clientsDao =  new ClientsDao();
+        BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
 
+        boxesModelsDao.deleteAll();
         List<Box> boxes = boxesDao.getAll();
         List<Model> models = modelsDao.getAll();
         List<Client> clients = clientsDao.getAll();

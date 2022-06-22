@@ -1,5 +1,7 @@
 package edu.rsatu.garage.entities;
 
+import java.util.Objects;
+
 public class Box {
     private Integer id;
     private Double rentPrice;
@@ -27,5 +29,18 @@ public class Box {
 
     public void setRentPrice(Double rentPrice) {
         this.rentPrice = rentPrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Box box = (Box) o;
+        return id.equals(box.id) && rentPrice.equals(box.rentPrice);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, rentPrice);
     }
 }

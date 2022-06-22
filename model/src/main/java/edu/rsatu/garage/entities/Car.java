@@ -1,6 +1,7 @@
 package edu.rsatu.garage.entities;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Car {
     private String number;
@@ -84,5 +85,18 @@ public class Car {
 
     public void setRentEndDate(LocalDate rentEndDate) {
         this.rentEndDate = rentEndDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return number.equals(car.number) && modelId.equals(car.modelId) && clientId.equals(car.clientId) && boxId.equals(car.boxId) && Objects.equals(receiptNumber, car.receiptNumber) && rentStartDate.equals(car.rentStartDate) && rentEndDate.equals(car.rentEndDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, modelId, clientId, boxId, receiptNumber, rentStartDate, rentEndDate);
     }
 }

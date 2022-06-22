@@ -36,12 +36,10 @@ public class CarsDao implements Dao<Car, String>{
                 + "client_id) "
                 + "VALUES(?,?,?,?,?,?)";
 
+        //String[] generatedKeysColumns = {"rectnum"};
         return connection.flatMap(conn -> {
             Optional<Long> generatedReceiptNumber = Optional.empty();
-            try (PreparedStatement statement =
-                         conn.prepareStatement(
-                                 sql,
-                                 Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement statement = conn.prepareStatement(sql, 4)) {
 
                 statement.setString(1, nonNullCar.getNumber());
                 statement.setObject(2, nonNullCar.getRentStartDate());
@@ -77,13 +75,12 @@ public class CarsDao implements Dao<Car, String>{
     public Optional<Car> get(String number) {
         return connection.flatMap(conn -> {
             Optional<Car> car = Optional.empty();
-            String sql = "SELECT * FROM car WHERE carnum = " + number;
+            String sql = "SELECT * FROM car WHERE carnum = ?";
 
-            try (Statement statement = conn.createStatement();
-                 ResultSet resultSet = statement.executeQuery(sql)) {
-
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                statement.setString(1, number);
+                ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-
                     LocalDate rentStartDate = resultSet.getObject("rental_start_date", LocalDate.class);
                     LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
                     Long receiptNumber = resultSet.getLong("rectnum");

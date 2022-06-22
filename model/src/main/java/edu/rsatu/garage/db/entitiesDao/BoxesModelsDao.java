@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +45,7 @@ public class BoxesModelsDao {
     public void deleteModelsFromBox(Box box, List<Model> models) {
         String message = "The box to be added should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
-        String sql = "DELETE FROM fit WHERE box_num = ? AND model_id = ?)";
+        String sql = "DELETE FROM fit WHERE box_num = ? AND model_id = ?";
         connection.ifPresent(conn -> {
             for (Model model : models) {
                 try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -141,5 +142,17 @@ public class BoxesModelsDao {
             }
         });
         return models;
+    }
+
+    public void deleteAll() {
+        String sql = "TRUNCATE TABLE fit";
+        connection.ifPresent(conn -> {
+            try (Statement statement = conn.createStatement()){
+                statement.execute(sql);
+            } catch (SQLException ex) {
+                System.out.println("HERE!!!");
+                ex.printStackTrace();
+            }
+        });
     }
 }
