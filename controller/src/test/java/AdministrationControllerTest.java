@@ -94,6 +94,7 @@ public class AdministrationControllerTest {
         clean();
         AdministrationController administrationController = new AdministrationController();
         ModelsDao dao = new ModelsDao();
+        administrationController.addModel("Ford");
         List<Model> models = dao.getAll();
         if(!models.get(0).equals(null))
         administrationController.deleteModel(models.get(0));

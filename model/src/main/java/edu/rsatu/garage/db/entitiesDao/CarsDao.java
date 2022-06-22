@@ -28,10 +28,10 @@ public class CarsDao implements Dao<Car, String>{
         String message = "The car to be added should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
         String sql = "INSERT INTO "
-                + "car (carNum,"
-                + "rental_start_date,"
-                + "rental_end_date,"
-                + "boxNum, "
+                + "car (carnum, "
+                + "rental_start_date, "
+                + "rental_end_date, "
+                + "boxnum, "
                 + "model_id, "
                 + "client_id) "
                 + "VALUES(?,?,?,?,?,?)";
@@ -42,12 +42,14 @@ public class CarsDao implements Dao<Car, String>{
                          conn.prepareStatement(
                                  sql,
                                  Statement.RETURN_GENERATED_KEYS)) {
+
                 statement.setString(1, nonNullCar.getNumber());
-                statement.setLong(2, nonNullCar.getModelId());
-                statement.setLong(3, nonNullCar.getClientId());
+                statement.setObject(2, nonNullCar.getRentStartDate());
+                statement.setObject(3, nonNullCar.getRentEndDate());
                 statement.setInt(4, nonNullCar.getBoxId());
-                statement.setObject(5, nonNullCar.getRentStartDate());
-                statement.setObject(6, nonNullCar.getRentEndDate());
+                statement.setLong(5, nonNullCar.getModelId());
+                statement.setLong(6, nonNullCar.getClientId());
+
                 int numberOfInsertedRows = statement.executeUpdate();
 
                 // Retrieve the auto-generated receipt number
@@ -75,18 +77,20 @@ public class CarsDao implements Dao<Car, String>{
     public Optional<Car> get(String number) {
         return connection.flatMap(conn -> {
             Optional<Car> car = Optional.empty();
-            String sql = "SELECT * FROM car WHERE carNum = " + number;
+            String sql = "SELECT * FROM car WHERE carnum = " + number;
 
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
 
                 if (resultSet.next()) {
+
+                    LocalDate rentStartDate = resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+                    Long receiptNumber = resultSet.getLong("rectnum");
+                    Integer boxId = resultSet.getInt("boxnum");
                     Long modelId = resultSet.getLong("model_id");
                     Long clientId = resultSet.getLong("client_id");
-                    Integer boxId = resultSet.getInt("boxNum");
-                    Long receiptNumber = resultSet.getLong("rectNum");
-                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
-                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+
                     car = Optional.of(
                             new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate));
                     LOGGER.log(Level.INFO, "Found {0} in database", car.get());
@@ -132,7 +136,7 @@ public class CarsDao implements Dao<Car, String>{
         String message = "The car to be updated should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
 
-        String sql = "UPDATE car "
+        String sql = "UPDATE box "
                 + "SET "
                 + "rental_start_date = ?, "
                 + "rental_end_date = ?, "
@@ -171,7 +175,10 @@ public class CarsDao implements Dao<Car, String>{
         String sql = "DELETE FROM car WHERE carNum = ?";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
                 statement.setString(1, nonNullCar.getNumber());
+
+
                 int numberOfDeletedRows = statement.executeUpdate();
 
                 LOGGER.log(Level.INFO, "Was the car deleted successfully? {0}",
