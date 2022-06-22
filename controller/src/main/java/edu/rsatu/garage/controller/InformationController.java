@@ -1,6 +1,7 @@
 package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
+import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
@@ -14,7 +15,7 @@ public class InformationController {
 
     private BoxesDao boxesDao = new BoxesDao();
     private ModelsDao modelsDao = new ModelsDao();
-
+    private BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
     private ClientsDao clientsDao = new ClientsDao();
 
     public List<Box> getAllBoxes() {
@@ -27,12 +28,12 @@ public class InformationController {
 
     public List<Box> getBoxesForModel(Model model) {
 
-        return boxesDao.getBoxesForModel(model);
+        return boxesModelsDao.getBoxesForModel(model);
     }
 
     public List<Box> getFreeBoxesForModel(Model model) {
 
-        return boxesDao.getFreeBoxesForModel(model);
+        return boxesModelsDao.getFreeBoxesForModel(model);
     }
 
     public List<Model> getAllModels() {
@@ -42,7 +43,7 @@ public class InformationController {
 
     public List<Model> getModelsForBox(Box box) {
 
-        return modelsDao.getModelsForBox(box);
+        return boxesModelsDao.getModelsForBox(box);
     }
 
     public List<Client> getAllClients() {

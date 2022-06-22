@@ -2,7 +2,6 @@ package edu.rsatu.garage.db.entitiesDao;
 
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
-import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Model;
 
 import java.sql.Connection;
@@ -156,33 +155,5 @@ public class ModelsDao implements Dao<Model, Long>{
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
-    }
-
-    public List<Model> getModelsForBox(Box box) {
-        List<Model> models = new ArrayList<>();
-        String message = "The box should not be null";
-        Box nonNullBox = Objects.requireNonNull(box, message);
-        String sql = "SELECT * FROM model WHERE id in " +
-                "(SELECT model_id FROM fit WHERE box_num = ?)";
-        connection.ifPresent(conn -> {
-            try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setInt(1, nonNullBox.getId());
-
-                ResultSet resultSet = statement.executeQuery();
-
-                while (resultSet.next()) {
-                    long id = resultSet.getLong("id");
-                    String name = resultSet.getString("name");
-                    Model model = new Model(id, name);
-                    models.add(model);
-
-                    LOGGER.log(Level.INFO, "Found {0} in database", model);
-                }
-
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-        });
-        return models;
     }
 }
