@@ -1,6 +1,8 @@
 package edu.rsatu.api;
 
-import edu.rsatu.garage.controller.*;
+import edu.rsatu.garage.controller.AdministrationController;
+import edu.rsatu.garage.controller.InformationController;
+import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Model;
 
 import javax.swing.*;
@@ -323,11 +325,14 @@ public class MainFrame extends JFrame {
     //обработчик добавления модели
     private void addModel(String name){
         System.out.println("Модель: " + name);
-        if(name!=""){
+        if(!name.isEmpty()){
             List<Model> models = informationController.getAllModels();
             boolean check = true;
             for(Model model: models){
-                if(model.getName() == name) check = false;
+                if(model.getName().equals(name)) {
+                    check = false;
+                    break;
+                }
             }
             if(check){
                 administrationController.addModel(name);
@@ -343,9 +348,6 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(MainFrame.this,
                     "<html><i>Название модели не может быть пустым</i>");
         }
-
-
-
     }
 
     private JPanel getDeleteModelPanel() {
