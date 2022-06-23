@@ -17,6 +17,8 @@ public class AdministrationController {
     private ClientsDao clientsDao = new ClientsDao();
     private BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
 
+    private InformationController informationController = new InformationController();
+
     public boolean addBox(int boxId, double rentPrice, List<Model> models) {
         //надо бы ещё сделать исключение, если список моделей null или пустой
         Box box = new Box(boxId, rentPrice);
@@ -40,6 +42,16 @@ public class AdministrationController {
     public void deleteModel(Model model) {
         modelsDao.delete(model);
 
+    }
+
+    public void deleteModelByName(String name) {
+        List<Model> models = informationController.getAllModels();
+        for(Model model: models){
+            if(model.getName().equals(name)){
+                modelsDao.delete(model);
+                break;
+            }
+        }
     }
 
     public void increaseBoxPrices(int number) {

@@ -311,12 +311,12 @@ public class MainFrame extends JFrame {
         bpc.anchor = GridBagConstraints.SOUTH;
         mainPanel.add(buttonsPanel, bpc);
 
-        JButton save = new JButton("Сохранить");
+        JButton save = new JButton("Добавить марку");
         buttonsPanel.add(save);
         save.addActionListener(e -> addModel(nameM.getText()));
-        JButton cancel = new JButton("Отмена");
+        /*JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
-
+        cancel.addActionListener(e -> canselAddModel());*/
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
@@ -349,6 +349,8 @@ public class MainFrame extends JFrame {
                     "<html><i>Название модели не может быть пустым</i>");
         }
     }
+
+
 
     private JPanel getDeleteModelPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -383,6 +385,12 @@ public class MainFrame extends JFrame {
         mc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(models, mc);
 
+        //добавление в список
+        List<Model> modelsG = informationController.getAllModels();
+        for(Model model:modelsG){
+            models.addItem(model.getName());
+        }
+
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
         bpc.weightx = 1;
@@ -393,8 +401,10 @@ public class MainFrame extends JFrame {
         bpc.anchor = GridBagConstraints.SOUTH;
         mainPanel.add(buttonsPanel, bpc);
 
+
         JButton stopService = new JButton("Прекратить обслуживание");
         buttonsPanel.add(stopService);
+        stopService.addActionListener(e -> stopService(models.getSelectedItem(),models.getSelectedItem().toString(),models));
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
@@ -402,6 +412,13 @@ public class MainFrame extends JFrame {
 
         return mainPanel;
     }
+    //удаление модели
+    private void stopService(Object item,String nameModel,JComboBox<String> models){
+        System.out.println(nameModel);
+        administrationController.deleteModelByName(nameModel);
+        models.removeItem(item);
+    }
+
 
     private JPanel getCloseBoxPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
