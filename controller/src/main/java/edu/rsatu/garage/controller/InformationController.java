@@ -36,9 +36,23 @@ public class InformationController {
         return boxesModelsDao.getFreeBoxesForModel(model);
     }
 
+
+
     public List<Model> getAllModels() {
 
         return modelsDao.getAll();
+    }
+
+    public Model getModelByName(String name){
+        Model rModel = null;
+        List<Model> models = getAllModels();
+        for(Model model: models){
+            if(model.getName().equals(name)){
+                rModel = model;
+                break;
+            }
+        }
+        return rModel;
     }
 
     public List<Model> getModelsForBox(Box box) {

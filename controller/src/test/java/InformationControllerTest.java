@@ -143,6 +143,20 @@ public class InformationControllerTest {
         assertEquals("Tesla",models.get(1).getName());
     }
 
+    @Test
+    public void getModelByName(){
+        clean();
+        AdministrationController administrationController = new AdministrationController();
+        InformationController informationController = new InformationController();
+
+        administrationController.addModel("Ford");
+        administrationController.addModel("Tesla");
+
+        List<Model> models = informationController.getAllModels();
+        assertEquals(informationController.getModelByName("Ford").getName(),models.get(0).getName());
+        assertEquals(informationController.getModelByName("Tesla").getName(),models.get(1).getName());
+    }
+
 
     @Test
     public void getModelsForBox(){

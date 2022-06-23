@@ -3,7 +3,10 @@ package edu.rsatu.api;
 import edu.rsatu.garage.controller.AdministrationController;
 import edu.rsatu.garage.controller.InformationController;
 import edu.rsatu.garage.controller.RentController;
-import edu.rsatu.garage.entities.Model;
+import edu.rsatu.garage.db.entitiesDao.ModelsDao;
+import edu.rsatu.garage.entities.*;
+import edu.rsatu.garage.entities.Box;
+
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -15,7 +18,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
+
+import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 
 
 public class MainFrame extends JFrame {
@@ -26,6 +32,9 @@ public class MainFrame extends JFrame {
 
     AdministrationController administrationController = new AdministrationController();
     InformationController informationController = new InformationController();
+
+    ModelsDao modelsDao = new ModelsDao();
+
     RentController rentController = new RentController();
 
     public MainFrame() {
@@ -189,7 +198,7 @@ public class MainFrame extends JFrame {
 
         JPanel allModelsPanel = new JPanel(new GridBagLayout());
         lowerPanel.add(allModelsPanel);
-        lowerPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+        lowerPanel.add(javax.swing.Box.createRigidArea(new Dimension(15, 0)));
 
         JLabel allModels = new JLabel("Все марки", SwingConstants.CENTER);
         GridBagConstraints amc = new GridBagConstraints();
@@ -212,20 +221,30 @@ public class MainFrame extends JFrame {
         mc.anchor = GridBagConstraints.NORTH;
         allModelsPanel.add(models, mc);
 
+        //добавление в список
+        List<Model> modelsG = informationController.getAllModels();
+        for(Model model:modelsG){
+            models.addItem(model.getName());
+        }
+        //********************************************************************************************************
         JPanel selectButtons = new JPanel(new GridLayout(3, 1, 10, 10));
         JButton add = new JButton("Добавить в выбранные");
         selectButtons.add(add);
-        JButton delete = new JButton("Удалить из выбранных");
+        JButton delete = new JButton("Убрать из выбранных");
         selectButtons.add(delete);
+
+
+        /*
         JButton newModel = new JButton("Новая марка");
         selectButtons.add(newModel);
+        */
         lowerPanel.add(selectButtons);
-        lowerPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+        lowerPanel.add(javax.swing.Box.createRigidArea(new Dimension(15, 0)));
 
         JPanel selectedModelsPanel = new JPanel(new GridBagLayout());
         lowerPanel.add(selectedModelsPanel);
 
-        JLabel selectedModels = new JLabel("Выбранные модели", SwingConstants.CENTER);
+        JLabel selectedModels = new JLabel("Выбранные марки", SwingConstants.CENTER);
         GridBagConstraints smc = new GridBagConstraints();
         smc.weightx = 1;
         smc.weighty = 1;
@@ -235,7 +254,11 @@ public class MainFrame extends JFrame {
         smc.anchor = GridBagConstraints.NORTH;
         selectedModelsPanel.add(selectedModels, smc);
 
-        JList<String> selected = new JList<>();
+
+
+        //список справа
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JList<String> selected = new JList<>(listModel);
         selectedModelsPanel.add(selected);
         GridBagConstraints sc = new GridBagConstraints();
         sc.weightx = 1;
@@ -245,6 +268,34 @@ public class MainFrame extends JFrame {
         sc.fill = GridBagConstraints.HORIZONTAL;
         sc.anchor = GridBagConstraints.NORTH;
         selectedModelsPanel.add(selected, sc);
+
+        selected.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+        //добавление в список
+        add.addActionListener(e -> {
+            selected.addSelectionInterval(0,0);
+            String model = models.getSelectedItem().toString();
+            List<String> modelsC = selected.getSelectedValuesList();
+            //модели добавляются снизу вверх, а не сверху вниз
+            //условие работает, только, когда модели виделены мышкой
+            //выделение сбрасывается, когда кликаем по какому-то элементу
+            if(!modelsC.contains(models.getSelectedItem())){
+                listModel.add(listModel.getSize(), model);
+                selected.addSelectionInterval(0,listModel.getSize());
+            }
+
+        });
+
+        //удаление из списка
+        //не работает
+        delete.addActionListener(e ->{
+            selected.addSelectionInterval(0,listModel.getSize());
+            String model = models.getSelectedItem().toString();
+            List<String> modelsC = selected.getSelectedValuesList();
+            //???
+            if(!modelsC.contains(models.getSelectedItem())){
+                listModel.removeElement(models.getSelectedItem().toString());
+            }
+        });
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -256,8 +307,79 @@ public class MainFrame extends JFrame {
         bpc.anchor = GridBagConstraints.SOUTH;
         mainPanel.add(buttonsPanel, bpc);
 
-        JButton save = new JButton("Сохранить");
+        JButton save = new JButton("Добавить бокс");
         buttonsPanel.add(save);
+
+
+
+        //добавление бокса обработчик
+        save.addActionListener(e -> {
+            int id = 1;
+            Double pr = 1.0;
+            List<Box> boxes = informationController.getAllBoxes();
+            if(!number.getText().isEmpty()) {
+                if (!price.getText().isEmpty()) {
+                    boolean cont = true;
+                    try {
+                        id = Integer.parseInt(number.getText().trim());
+                        System.out.println("->>>>" + id);
+                    } catch (NumberFormatException nfe) {
+                        JOptionPane.showMessageDialog(MainFrame.this,
+                                "<html><i>Номер бокса должен быть целым числом</i>");
+                        cont = false;
+                    }
+                    if (cont) {
+                        cont = true;
+                        try {
+                            pr = Double.parseDouble(price.getText().trim());
+                            System.out.println("->>>>" + pr);
+                        } catch (NumberFormatException nfe) {
+                            JOptionPane.showMessageDialog(MainFrame.this,
+                                    "<html><i>Суточная аренда должна быть вещественным числом</i>");
+                            cont = false;
+                        }
+                        if (cont) {
+                            boolean check = true;
+                            for (Box box : boxes) {
+                                if (box.getId() == id) {
+                                    check = false;
+                                }
+                                if (check) {
+                                    //можно записывать в БД
+                                    List<String> names = selected.getSelectedValuesList();
+                                    List<Model> modelsZ = new ArrayList<>();
+                                   // List<Model> modelsT = informationController.getAllModels();
+                                    for(String name: names){
+                                        modelsZ.add(informationController.getModelByName(name));
+                                    }
+                                    //Когда таблица баксов пустая ничего не добавляется
+                                    administrationController.addBox(id,pr,modelsZ);
+                                    JOptionPane.showMessageDialog(MainFrame.this,
+                                            "<html><i>Бокс успешно добавлен</i>");
+
+                                } else {
+                                    JOptionPane.showMessageDialog(MainFrame.this,
+                                            "<html><i>Бокс с таким id уже есть в базе данных</i>");
+                                }
+                            }
+                        }
+
+
+                    } else {
+                        JOptionPane.showMessageDialog(MainFrame.this,
+                                "<html><i>Цена не может быть пустой</i>");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "<html><i>Номер бокса не может быть пустым</i>");
+                }
+            }
+        });
+
+
+
+
+
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
@@ -321,6 +443,8 @@ public class MainFrame extends JFrame {
 
         return mainPanel;
     }
+
+
 
     //обработчик добавления модели
     private void addModel(String name){
