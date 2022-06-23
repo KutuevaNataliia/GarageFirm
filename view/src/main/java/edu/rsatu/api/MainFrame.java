@@ -272,27 +272,31 @@ public class MainFrame extends JFrame {
         selected.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
         //добавление в список
         add.addActionListener(e -> {
-            selected.addSelectionInterval(0,0);
+
+            List<String> modelsT = new ArrayList<>();
+            for (int i = 0; i < selected.getModel().getSize(); i++) {
+               modelsT.add(String.valueOf(selected.getModel().getElementAt(i)));
+            }
+
             String model = models.getSelectedItem().toString();
             List<String> modelsC = selected.getSelectedValuesList();
             //модели добавляются снизу вверх, а не сверху вниз
             //условие работает, только, когда модели виделены мышкой
             //выделение сбрасывается, когда кликаем по какому-то элементу
-            if(!modelsC.contains(models.getSelectedItem())){
+            if(!modelsT.contains(models.getSelectedItem())){
                 listModel.add(listModel.getSize(), model);
-                selected.addSelectionInterval(0,listModel.getSize());
             }
 
         });
 
-        //удаление из списка
-        //не работает
         delete.addActionListener(e ->{
-            selected.addSelectionInterval(0,listModel.getSize());
+
             String model = models.getSelectedItem().toString();
-            List<String> modelsC = selected.getSelectedValuesList();
-            //???
-            if(!modelsC.contains(models.getSelectedItem())){
+            List<String> modelsT = new ArrayList<>();
+            for (int i = 0; i < selected.getModel().getSize(); i++) {
+                modelsT.add(String.valueOf(selected.getModel().getElementAt(i)));
+            }
+            if(modelsT.contains(models.getSelectedItem())){
                 listModel.removeElement(models.getSelectedItem().toString());
             }
         });
@@ -311,9 +315,9 @@ public class MainFrame extends JFrame {
         buttonsPanel.add(save);
 
 
-
         //добавление бокса обработчик
         save.addActionListener(e -> {
+            System.out.println("Start");
             int id = 1;
             Double pr = 1.0;
             List<Box> boxes = informationController.getAllBoxes();
@@ -344,18 +348,31 @@ public class MainFrame extends JFrame {
                                 if (box.getId() == id) {
                                     check = false;
                                 }
+                            }
                                 if (check) {
-                                    //можно записывать в БД
-                                    List<String> names = selected.getSelectedValuesList();
-                                    List<Model> modelsZ = new ArrayList<>();
-                                   // List<Model> modelsT = informationController.getAllModels();
-                                    for(String name: names){
-                                        modelsZ.add(informationController.getModelByName(name));
+
+                                    //получение названий выбранных моделей
+                                    List<String> names = new ArrayList<>();
+                                    for (int i = 0; i < selected.getModel().getSize(); i++) {
+                                        names.add(String.valueOf(selected.getModel().getElementAt(i)));
                                     }
-                                    //Когда таблица баксов пустая ничего не добавляется
-                                    administrationController.addBox(id,pr,modelsZ);
-                                    JOptionPane.showMessageDialog(MainFrame.this,
-                                            "<html><i>Бокс успешно добавлен</i>");
+                                    if(names.size() != 0){
+                                        //можно записывать в БД
+                                        //формирование списка выбранных моделей из БД
+                                        List<Model> modelsZ = new ArrayList<>();
+                                        // List<Model> modelsT = informationController.getAllModels();
+                                        for(String name: names){
+                                            modelsZ.add(informationController.getModelByName(name));
+                                        }
+                                        //Когда таблица баксов пустая ничего не добавляется
+                                        administrationController.addBox(id,pr,modelsZ);
+                                        JOptionPane.showMessageDialog(MainFrame.this,
+                                                "<html><i>Бокс успешно добавлен</i>");
+                                    }
+                                    else{
+                                        JOptionPane.showMessageDialog(MainFrame.this,
+                                                "<html><i>Выберите хотя бы одну модель</i>");
+                                    }
 
                                 } else {
                                     JOptionPane.showMessageDialog(MainFrame.this,
@@ -363,8 +380,6 @@ public class MainFrame extends JFrame {
                                 }
                             }
                         }
-
-
                     } else {
                         JOptionPane.showMessageDialog(MainFrame.this,
                                 "<html><i>Цена не может быть пустой</i>");
@@ -373,16 +388,17 @@ public class MainFrame extends JFrame {
                     JOptionPane.showMessageDialog(MainFrame.this,
                             "<html><i>Номер бокса не может быть пустым</i>");
                 }
-            }
+
+            System.out.println("End");
         });
 
 
 
 
-
+        /*
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
-
+        */
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
