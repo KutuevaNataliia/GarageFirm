@@ -108,12 +108,13 @@ public class CarsDao implements Dao<Car, String>{
 
                 while (resultSet.next()) {
                     String number = resultSet.getString("carNum");
-                    Long modelId = resultSet.getLong("model_id");
-                    Long clientId = resultSet.getLong("client_id");
-                    Integer boxId = resultSet.getInt("boxNum");
-                    Long receiptNumber = resultSet.getLong("rectNum");
                     LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
                     LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    Integer boxId = resultSet.getInt("boxNum");
+                    Long modelId = resultSet.getLong("model_id");
+                    Long clientId = resultSet.getLong("client_id");
+
 
                     Car car = new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate);
 
@@ -133,27 +134,26 @@ public class CarsDao implements Dao<Car, String>{
         String message = "The car to be updated should not be null";
         Car nonNullCar = Objects.requireNonNull(car, message);
 
-        String sql = "UPDATE box "
+        String sql = "UPDATE car "
                 + "SET "
                 + "rental_start_date = ?, "
                 + "rental_end_date = ?, "
-                + "rectNum = ?, "
-                + "boxNum = ?, "
+                + "boxnum = ?, "
                 + "model_id = ?, "
                 + "client_id = ?, "
                 + "WHERE "
-                + "carNum = ?";
+                + "carnum = ?";
 
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
+                statement.setObject(1, nonNullCar.getRentStartDate());
+                statement.setObject(2, nonNullCar.getRentEndDate());
+                statement.setInt(3, nonNullCar.getBoxId());
+                statement.setLong(4, nonNullCar.getModelId());
+                statement.setLong(5, nonNullCar.getClientId());
+                statement.setString(6, nonNullCar.getNumber());
 
-                statement.setString(1, nonNullCar.getNumber());
-                statement.setLong(2, nonNullCar.getModelId());
-                statement.setLong(3, nonNullCar.getClientId());
-                statement.setInt(4, nonNullCar.getBoxId());
-                statement.setLong(5, nonNullCar.getReceiptNumber());
-                statement.setObject(6, nonNullCar.getRentStartDate());
-                statement.setObject(7, nonNullCar.getRentEndDate());
+
 
                 int numberOfUpdatedRows = statement.executeUpdate();
 

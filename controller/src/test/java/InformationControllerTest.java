@@ -1,5 +1,6 @@
 
 import edu.rsatu.garage.controller.AdministrationController;
+import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
 import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.CarsDao;
@@ -12,6 +13,7 @@ import edu.rsatu.garage.entities.Model;
 import org.junit.jupiter.api.Test;
 import edu.rsatu.garage.controller.InformationController;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class InformationControllerTest {
     AdministrationController administrationController = new AdministrationController();
 
     InformationController informationController = new InformationController();
+    RentController rentController = new RentController();
 
     BoxesDao boxesDao = new BoxesDao();
     ModelsDao modelsDao = new ModelsDao();
@@ -88,16 +91,42 @@ public class InformationControllerTest {
 
     }
 
-    //что делать с fit ?
     @Test
     public void getBoxesForModel(){
-
+        clean();
+        administrationController.addModel("Tesla");
+        administrationController.addModel("Ford");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        administrationController.addBox(2,3000.00,List.of(models.get(0)));
+        List<Box> boxes = informationController.getAllBoxes();
+        List<Box> boxesF = informationController.getBoxesForModel(models.get(1));
+        assertEquals(boxesF.get(0).hashCode(),boxes.get(0).hashCode());
+        for(Box box: boxesF){
+            System.out.println("Подходит: "+ box.getId());
+        }
     }
 
-    //что делать с fit ?
     @Test
     public void getFreeBoxesForModel(){
-
+        clean();
+        administrationController.addModel("Tesla");
+        administrationController.addModel("Ford");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        administrationController.addBox(2,3000.00,List.of(models.get(0)));
+        List<Box> boxes = informationController.getAllBoxes();
+        administrationController.addClient("Sharov","AdressSharova");
+        List<Client> clients = informationController.getAllClients();
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),boxes.get(0),"s111ss",rentStartDate,rentEndDate);
+        Car car = rentController.getCar("s111ss");
+        List<Box> boxesF = informationController.getFreeBoxesForModel(models.get(0));
+        assertEquals(boxes.get(1).hashCode(),boxesF.get(0).hashCode());
+        for(Box box: boxesF){
+            System.out.println("Свободен для Tesla: "+ box.getId());
+        }
     }
 
     @Test
@@ -114,9 +143,20 @@ public class InformationControllerTest {
         assertEquals("Tesla",models.get(1).getName());
     }
 
-    //что делать с fit ?
+
     @Test
     public void getModelsForBox(){
+        clean();
+        administrationController.addModel("Tesla");
+        administrationController.addModel("Ford");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        administrationController.addBox(2,3000.00,List.of(models.get(0)));
+        List<Box> boxes = informationController.getAllBoxes();
+
+        List<Model> modelsF = informationController.getModelsForBox(boxes.get(1));
+        assertEquals(modelsF.size(),1);
+        assertEquals(modelsF.get(0).getName(),"Tesla");
 
     }
 
@@ -134,28 +174,75 @@ public class InformationControllerTest {
         assertEquals(clients.get(1).getSurname(),"Zadorina");
     }
 
-    //надо разобраться с Car
+    //не работает
+    //почему-то возвращает null значение
     @Test
     public void getClientForBox(){
+        clean();
+        administrationController.addModel("Tesla");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        Box box = boxesDao.get(1).orElse(null);
+        administrationController.addClient("Sharov","AdressSharova");
+        List<Client> clients = informationController.getAllClients();
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
+        Client clientF = informationController.getClientForBox(box);
+        assertEquals(clientF.getSurname(), "Sharov");
 
     }
 
-    //надо разобраться с Car
     @Test
     public void getClientsForModel(){
-
+        clean();
+        administrationController.addModel("Tesla");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        Box box = boxesDao.get(1).orElse(null);
+        administrationController.addClient("Sharov","AdressSharova");
+        List<Client> clients = informationController.getAllClients();
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
+        List<Client> clientsF = informationController.getClientsForModel(models.get(0));
+        assertEquals(clientsF.get(0).getSurname(), "Sharov");
     }
 
-    //надо разобраться с Car
+    //не работает
     @Test
     public void getClientsForDate(){
-
+        clean();
+        administrationController.addModel("Tesla");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        Box box = boxesDao.get(1).orElse(null);
+        administrationController.addClient("Sharov","AdressSharova");
+        List<Client> clients = informationController.getAllClients();
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
+        LocalDate nowDate = LocalDate.of(2022, 10, 19);
+        List<Client> clientsF = informationController.getClientsForDate(nowDate);
+        assertEquals(clientsF.get(0).getSurname(), "Sharov");
     }
 
-    //надо разобраться с Car
+    //не работает
     @Test
     public void getClientsForModelDate(){
-
+        clean();
+        administrationController.addModel("Tesla");
+        List<Model> models = informationController.getAllModels();
+        administrationController.addBox(1,2500.00,models);
+        Box box = boxesDao.get(1).orElse(null);
+        administrationController.addClient("Sharov","AdressSharova");
+        List<Client> clients = informationController.getAllClients();
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
+        LocalDate nowDate = LocalDate.of(2022, 10, 19);
+        List<Client> clientsF = informationController.getClientsForModelDate(models.get(0),nowDate);
+        assertEquals(clientsF.get(0).getSurname(), "Sharov");
     }
 
 }

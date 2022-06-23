@@ -93,7 +93,7 @@ public class BoxesModelsDao {
         Model nonNullModel = Objects.requireNonNull(model, message);
         String sql = "SELECT * FROM box WHERE boxnum IN " +
                 "(SELECT box_num FROM fit WHERE model_id = ?) " +
-                "AND NOT EXISTS (SELECT car.box_Num FROM car WHERE car.box_Num = box.boxNum)";
+                "AND NOT EXISTS (SELECT car.boxnum FROM car WHERE car.boxnum = box.boxnum)";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setLong(1, nonNullModel.getId());

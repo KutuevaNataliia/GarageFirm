@@ -170,7 +170,7 @@ public class ClientsDao implements Dao<Client, Long> {
         return connection.flatMap(conn -> {
             Optional<Client> client = Optional.empty();
             String sql = "SELECT * FROM client WHERE id IN" +
-            "(SELECT car.client_id FROM car WHERE car.boxNum = ?)";
+            "(SELECT car.client_id FROM car WHERE car.boxnum = ?)";
 
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 

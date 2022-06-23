@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import edu.rsatu.garage.controller.InformationController;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -83,6 +84,84 @@ public class RentControllerTest {
     public void getCar() {
         clean();
         //уже протестирован при добавлении
+    }
+
+    @Test
+    public void deleteCar() {
+        clean();
+
+        Model model = new Model("Ford");
+        ModelsDao modelsDao = new ModelsDao();
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,500, List.of(model));
+        administrationController.addClient("Sharov","AdressSharova");
+        administrationController.addModel("Ford");
+        List<Client> clients = informationController.getAllClients();
+        List<Box> boxes = informationController.getAllBoxes();
+        List<Model> models  = informationController.getAllModels();
+
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+
+        rentController.addCar(clients.get(0),models.get(0),boxes.get(0),"s111ss",rentStartDate,rentEndDate);
+        rentController.deleteCar("s111ss");
+        Car car = carsDao.get("s111ss").orElse(null);
+        assertEquals(car,null);
+    }
+
+
+    //что-то не так работает
+    @Test
+    public void updateCar() {
+        clean();
+        Model model = new Model("Ford");
+        Long modelId = modelsDao.save(model).orElse(null);
+        model = modelsDao.get(modelId).orElse(null);
+        assertNotNull(model);
+        administrationController.addBox(1,500, List.of(model));
+        administrationController.addClient("Sharov","AdressSharova");
+        administrationController.addModel("Ford");
+        List<Client> clients = informationController.getAllClients();
+        List<Box> boxes = informationController.getAllBoxes();
+        List<Model> models  = informationController.getAllModels();
+
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),boxes.get(0),"s111ss",rentStartDate,rentEndDate);
+
+        Car newcar = rentController.getCar("s111ss");
+        LocalDate newRentEndDate = LocalDate.of(2022, 10, 19);
+        newcar.setRentEndDate(newRentEndDate);
+        rentController.updateCar(newcar);
+        Car nowcar  = rentController.getCar("s111ss");
+        assertEquals(newcar.getRentEndDate(),nowcar.getRentEndDate());
+    }
+
+    //?
+    @Test
+    public void getAllCars() {
+        clean();
+        administrationController.addModel("Ford");
+        administrationController.addModel("Tesla");
+        List<Model> models  = informationController.getAllModels();
+        administrationController.addBox(1,500, List.of(models.get(0)));
+        administrationController.addBox(2,1000, List.of(models.get(1)));
+        List<Box> boxes = informationController.getAllBoxes();
+        administrationController.addClient("Sharov","AdressSharova");
+        administrationController.addClient("Zadorina","AdressZadorinoy");
+        List<Client> clients = informationController.getAllClients();
+
+        LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
+        LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
+        rentController.addCar(clients.get(0),models.get(0),boxes.get(0),"s111ss",rentStartDate,rentEndDate);
+        rentController.addCar(clients.get(1),models.get(1),boxes.get(1),"s222ss",rentStartDate,rentEndDate);
+
+        Collection<Car> cars = rentController.getAllCars();
+
+        //а как теперь извлечь елемент из коллекции ?
+
     }
 
 }
