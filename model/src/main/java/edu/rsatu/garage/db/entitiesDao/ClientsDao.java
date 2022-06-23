@@ -176,7 +176,7 @@ public class ClientsDao implements Dao<Client, Long> {
 
                  statement.setInt(1, nonNullBox.getId());
 
-                 ResultSet resultSet = statement.executeQuery(sql);
+                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     Long id = resultSet.getLong("id");
                     String surname = resultSet.getString("surname");
@@ -228,7 +228,7 @@ public class ClientsDao implements Dao<Client, Long> {
         LocalDate nonNullDate = Objects.requireNonNull(rentEndDate, message);
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE id IN " +
-                "(SELECT client_id FROM car WHERE rental_end_date <= ?";
+                "(SELECT client_id FROM car WHERE rental_end_date <= ?)";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -263,7 +263,7 @@ public class ClientsDao implements Dao<Client, Long> {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE id IN " +
                 "(SELECT client_id FROM car WHERE model_id = ?)" +
-                "AND id IN (SELECT client_id FROM car WHERE rental_end_date <= ? ";
+                "AND id IN (SELECT client_id FROM car WHERE rental_end_date <= ?) ";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 

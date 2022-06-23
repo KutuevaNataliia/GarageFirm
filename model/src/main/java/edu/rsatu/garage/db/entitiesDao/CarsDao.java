@@ -7,7 +7,7 @@ import edu.rsatu.garage.entities.Car;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -99,8 +99,8 @@ public class CarsDao implements Dao<Car, String>{
         });
     }
 
-    public Collection<Car> getAll() {
-        Collection<Car> cars = new ArrayList<>();
+    public List<Car> getAll() {
+        List<Car> cars = new ArrayList<>();
         String sql = "SELECT * FROM car";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
@@ -140,7 +140,7 @@ public class CarsDao implements Dao<Car, String>{
                 + "rental_end_date = ?, "
                 + "boxnum = ?, "
                 + "model_id = ?, "
-                + "client_id = ?, "
+                + "client_id = ? "
                 + "WHERE "
                 + "carnum = ?";
 

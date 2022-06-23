@@ -7,7 +7,7 @@ import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.List;
 
 public class RentController {
 
@@ -30,7 +30,7 @@ public class RentController {
         carsDao.update(car);
     }
 
-    public Collection<Car> getAllCars(){
+    public List<Car> getAllCars(){
         return carsDao.getAll();
     }
 

@@ -112,7 +112,6 @@ public class RentControllerTest {
     }
 
 
-    //что-то не так работает
     @Test
     public void updateCar() {
         clean();
@@ -139,7 +138,6 @@ public class RentControllerTest {
         assertEquals(newcar.getRentEndDate(),nowcar.getRentEndDate());
     }
 
-    //?
     @Test
     public void getAllCars() {
         clean();
@@ -158,10 +156,15 @@ public class RentControllerTest {
         rentController.addCar(clients.get(0),models.get(0),boxes.get(0),"s111ss",rentStartDate,rentEndDate);
         rentController.addCar(clients.get(1),models.get(1),boxes.get(1),"s222ss",rentStartDate,rentEndDate);
 
-        Collection<Car> cars = rentController.getAllCars();
-
-        //а как теперь извлечь елемент из коллекции ?
-
+        List<Car> cars = rentController.getAllCars();
+        Car car1 = cars.get(0);
+        assertEquals("s111ss    ", car1.getNumber());
+        assertEquals(rentStartDate, car1.getRentStartDate());
+        assertEquals(rentEndDate, car1.getRentEndDate());
+        Car car2 = cars.get(1);
+        assertEquals("s222ss    ", car2.getNumber());
+        assertEquals(rentStartDate, car2.getRentStartDate());
+        assertEquals(rentEndDate, car2.getRentEndDate());
     }
 
 }

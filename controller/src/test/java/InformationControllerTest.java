@@ -174,14 +174,12 @@ public class InformationControllerTest {
         assertEquals(clients.get(1).getSurname(),"Zadorina");
     }
 
-    //не работает
-    //почему-то возвращает null значение
     @Test
     public void getClientForBox(){
         clean();
         administrationController.addModel("Tesla");
         List<Model> models = informationController.getAllModels();
-        administrationController.addBox(1,2500.00,models);
+        administrationController.addBox(1,2500.00, models);
         Box box = boxesDao.get(1).orElse(null);
         administrationController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
@@ -209,7 +207,6 @@ public class InformationControllerTest {
         assertEquals(clientsF.get(0).getSurname(), "Sharov");
     }
 
-    //не работает
     @Test
     public void getClientsForDate(){
         clean();
@@ -227,7 +224,6 @@ public class InformationControllerTest {
         assertEquals(clientsF.get(0).getSurname(), "Sharov");
     }
 
-    //не работает
     @Test
     public void getClientsForModelDate(){
         clean();
