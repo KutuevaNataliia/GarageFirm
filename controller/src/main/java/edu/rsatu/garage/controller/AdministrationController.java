@@ -39,6 +39,7 @@ public class AdministrationController {
 
     public void deleteModel(Model model) {
         modelsDao.delete(model);
+
     }
 
     public void increaseBoxPrices(int number) {

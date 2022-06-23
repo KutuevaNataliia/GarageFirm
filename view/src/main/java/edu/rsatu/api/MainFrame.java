@@ -1,24 +1,9 @@
 package edu.rsatu.api;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import edu.rsatu.garage.controller.*;
+import edu.rsatu.garage.entities.Model;
+
+import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -28,6 +13,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.ArrayDeque;
+import java.util.List;
+
 
 public class MainFrame extends JFrame {
 
@@ -35,7 +22,13 @@ public class MainFrame extends JFrame {
     private JPanel rentIssueMutablePanel;
     private ArrayDeque<JPanel> rentIssuePanels = new ArrayDeque<>();
 
+    AdministrationController administrationController = new AdministrationController();
+    InformationController informationController = new InformationController();
+    RentController rentController = new RentController();
+
     public MainFrame() {
+
+
 
         getContentPane().setLayout(new GridBagLayout());
 
@@ -289,12 +282,14 @@ public class MainFrame extends JFrame {
         JPanel upperPanel = new JPanel(new GridLayout(2,2, 10, 20));
         JLabel typeName = new JLabel("Введите название", SwingConstants.LEFT);
         upperPanel.add(typeName);
-        JTextField name = new JTextField();
-        upperPanel.add(name);
+        JTextField nameM = new JTextField();
+        upperPanel.add(nameM);
+        /*
         JLabel typeIdentifier = new JLabel("Введите идентификатор", SwingConstants.LEFT);
         upperPanel.add(typeIdentifier);
         JTextField identifier = new JTextField();
         upperPanel.add(identifier);
+        */
         GridBagConstraints uc = new GridBagConstraints();
         uc.weightx = 1;
         uc.weighty = 5;
@@ -316,12 +311,41 @@ public class MainFrame extends JFrame {
 
         JButton save = new JButton("Сохранить");
         buttonsPanel.add(save);
+        save.addActionListener(e -> addModel(nameM.getText()));
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
+    }
+
+    //обработчик добавления модели
+    private void addModel(String name){
+        System.out.println("Модель: " + name);
+        if(name!=""){
+            List<Model> models = informationController.getAllModels();
+            boolean check = true;
+            for(Model model: models){
+                if(model.getName() == name) check = false;
+            }
+            if(check){
+                administrationController.addModel(name);
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "<html><i>Модель успешно добавлена в базу данных</i>");
+            }
+            else{
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "<html><i>Такая модель уже имеется в базе данных</i>");
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(MainFrame.this,
+                    "<html><i>Название модели не может быть пустым</i>");
+        }
+
+
+
     }
 
     private JPanel getDeleteModelPanel() {
