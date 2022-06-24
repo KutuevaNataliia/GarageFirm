@@ -33,6 +33,16 @@ public class AdministrationController {
         boxesDao.delete(box);
     }
 
+    public void deleteBoxById(Integer id){
+        List<Box> boxes = informationController.getAllBoxes();
+        for(Box box:boxes){
+            if(box.getId().equals(id)){
+                deleteBox(box);
+                break;
+            }
+        }
+    }
+
     public boolean addModel(String name) {
         Model model = new Model(name);
         modelsDao.save(model);
