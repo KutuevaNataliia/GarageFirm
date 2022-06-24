@@ -2,7 +2,7 @@ package edu.rsatu.garage.entities;
 
 import java.util.Objects;
 
-public class Box {
+public class Box implements  Comparable<Box>{
     private Integer id;
     private Double rentPrice;
 
@@ -42,5 +42,18 @@ public class Box {
     @Override
     public int hashCode() {
         return Objects.hash(id, rentPrice);
+    }
+
+    @Override
+    public int compareTo(Box box) {
+        if(id == box.getId()){
+            return 0;
+        }
+
+        if(id <  box.getId()){
+            return -1;
+        }
+
+        return 1;
     }
 }

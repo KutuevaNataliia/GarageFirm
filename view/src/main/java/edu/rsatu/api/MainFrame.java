@@ -697,29 +697,37 @@ public class MainFrame extends JFrame {
         JButton save = new JButton("Подтвердить изменение стоимости");
         buttonsPanel.add(save);
         save.addActionListener(e ->{
+
             String str = text.getText();
-            Double mult = null;
-            try {
-                mult = Double.parseDouble(str.trim());
-            } catch (NumberFormatException nfe) {
+            if(!str.equals("")){
+                Double mult = null;
+                try {
+                    mult = Double.parseDouble(str.trim());
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "<html><i>Число должно быть вещественным</i>");
+                }
+                if(!mult.equals(null)){
+                    if(increase.isSelected()){
+                        administrationController.increaseBoxPrices(mult);
+
+                        JOptionPane.showMessageDialog(MainFrame.this,
+                                "<html><i>Цена аренды всех боксов была увеличена в " + str +" раз</i>");
+                    }
+                    else if(decrease.isSelected()){
+                        administrationController.decreaseBoxPrices(mult);
+
+                        JOptionPane.showMessageDialog(MainFrame.this,
+                                "<html><i>Цена аренды всех боксов была уменьшена в " + str +" раз</i>");
+                    }
+
+                }
+            }
+            else{
                 JOptionPane.showMessageDialog(MainFrame.this,
-                        "<html><i>Число должно быть вещественным</i>");
+                        "<html><i>Введите значение!</i>");
             }
-            if(!mult.equals(null)){
-                if(increase.isSelected()){
-                    administrationController.increaseBoxPrices(mult);
 
-                    JOptionPane.showMessageDialog(MainFrame.this,
-                            "<html><i>Цена аренды всех боксов была увеличена в " + str +" раз</i>");
-                }
-                else if(decrease.isSelected()){
-                    administrationController.decreaseBoxPrices(mult);
-
-                    JOptionPane.showMessageDialog(MainFrame.this,
-                            "<html><i>Цена аренды всех боксов была уменьшена в " + str +" раз</i>");
-                }
-
-            }
 
         });
         /*

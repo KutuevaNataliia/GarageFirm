@@ -11,6 +11,7 @@ import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 public class InformationController {
@@ -22,7 +23,9 @@ public class InformationController {
     private CarsDao carsDao = new CarsDao();
 
     public List<Box> getAllBoxes() {
-        return  boxesDao.getAll();
+        List<Box> boxes = boxesDao.getAll();
+        Collections.sort(boxes);
+        return boxes;
     }
 
     public List<Box> getFreeBoxes() {
@@ -56,8 +59,9 @@ public class InformationController {
     }
 
     public List<Model> getAllModels() {
-
-        return modelsDao.getAll();
+        List<Model> models = modelsDao.getAll();
+        Collections.sort(models);
+        return models;
     }
 
     public Model getModelByName(String name){

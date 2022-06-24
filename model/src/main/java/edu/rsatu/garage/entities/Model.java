@@ -2,7 +2,7 @@ package edu.rsatu.garage.entities;
 
 import java.util.Objects;
 
-public class Model {
+public class Model implements  Comparable<Model> {
     private Long id;
     private String name;
 
@@ -42,5 +42,18 @@ public class Model {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public int compareTo(Model o) {
+        if(id == o.getId()){
+            return 0;
+        }
+
+        if(id <  o.getId()){
+            return -1;
+        }
+
+        return 1;
     }
 }

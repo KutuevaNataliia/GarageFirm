@@ -147,9 +147,19 @@ public class BoxesDao implements Dao<Box, Integer> {
     public void changeAllPrices(double number, boolean increase) {
         String sql;
         if (increase) {
-            sql = "UPDATE box set rentprice = rentprice * ?";
+
+            sql = "UPDATE box set rentprice = 1 " +
+                    "WHERE box.rentprice < 1; \n" +
+                    "UPDATE box set rentprice = rentprice * ? ";
+
+
         } else {
-            sql = "UPDATE box set rentprice = rentprice / ?";
+            sql = "UPDATE box set rentprice = rentprice / ?; \n" +
+                    "UPDATE box set rentprice = 1 " +
+                    "WHERE box.rentprice < 1";
+
+
+
         }
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
