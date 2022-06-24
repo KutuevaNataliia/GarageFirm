@@ -79,10 +79,9 @@ public class MainFrame extends JFrame {
         JMenuItem newBrand = new JMenuItem("Новая марка");
         administration.add(newBrand);
         newBrand.addActionListener(e -> setMainPanel(getNewModelJPanel()));
-        JMenuItem deleteModel = new JMenuItem("Удалить марку");
+        JMenuItem deleteModel = new JMenuItem("Прекратить обслуживание марки");
         administration.add(deleteModel);
         deleteModel.addActionListener(e -> setMainPanel(getDeleteModelPanel()));
-
         JMenu services = new JMenu("Обслуживание клиентов");
         menuBar.add(services);
         JMenuItem startRenting = new JMenuItem("Оформить аренду");
@@ -229,13 +228,12 @@ public class MainFrame extends JFrame {
         for(Model model:modelsG){
             models.addItem(model.getName());
         }
-        //********************************************************************************************************
+        //****************************************************************************************************************************************************
         JPanel selectButtons = new JPanel(new GridLayout(3, 1, 10, 10));
         JButton add = new JButton("Добавить в выбранные");
         selectButtons.add(add);
         JButton delete = new JButton("Убрать из выбранных");
         selectButtons.add(delete);
-
 
         /*
         JButton newModel = new JButton("Новая марка");
@@ -256,8 +254,6 @@ public class MainFrame extends JFrame {
         smc.fill = GridBagConstraints.HORIZONTAL;
         smc.anchor = GridBagConstraints.NORTH;
         selectedModelsPanel.add(selectedModels, smc);
-
-
 
         //список справа
         DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -283,9 +279,6 @@ public class MainFrame extends JFrame {
 
             String model = models.getSelectedItem().toString();
             List<String> modelsC = selected.getSelectedValuesList();
-            //модели добавляются снизу вверх, а не сверху вниз
-            //условие работает, только, когда модели виделены мышкой
-            //выделение сбрасывается, когда кликаем по какому-то элементу
             if(!modelsT.contains(models.getSelectedItem())){
                 listModel.add(listModel.getSize(), model);
             }
@@ -367,7 +360,6 @@ public class MainFrame extends JFrame {
                                         for(String name: names){
                                             modelsZ.add(informationController.getModelByName(name));
                                         }
-                                        //Когда таблица баксов пустая ничего не добавляется
                                         administrationController.addBox(id,pr,modelsZ);
                                         JOptionPane.showMessageDialog(MainFrame.this,
                                                 "<html><i>Бокс успешно добавлен</i>");
@@ -576,7 +568,7 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(caption, cc);
 
-        JLabel chooseBox = new JLabel("Выберите бокс из списка", SwingConstants.CENTER);
+        JLabel chooseBox = new JLabel("Выберите номер бокса из списка", SwingConstants.CENTER);
         mainPanel.add(chooseBox);
         GridBagConstraints cbc = new GridBagConstraints();
         cbc.weightx = 1;
@@ -597,6 +589,13 @@ public class MainFrame extends JFrame {
         bc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(boxes, bc);
 
+        //заполнить список боксов при заходе на форму
+        List<Box> boxesG = informationController.getAllBoxes();
+        for(Box box:boxesG){
+            boxes.addItem(box.getId().toString());
+        }
+
+
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
         bpc.weightx = 1;
@@ -609,9 +608,27 @@ public class MainFrame extends JFrame {
 
         JButton stopService = new JButton("Закрыть бокс");
         buttonsPanel.add(stopService);
+
+        //закрытие бокса - контроллер
+        stopService.addActionListener(e -> {
+            String Select = boxes.getSelectedItem().toString();
+            Integer SelectID = null;
+            try {
+                SelectID = Integer.parseInt(Select.trim());
+            } catch (NumberFormatException nfe) {
+            }
+            if(!SelectID.equals(null)){
+                administrationController.deleteBoxById(SelectID);
+                boxes.removeItem(boxes.getSelectedItem());
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "<html><i>Выбранный бокс был успешно закрыт</i>");
+            }
+        });
+
+        /*
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
-
+        */
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
@@ -677,11 +694,38 @@ public class MainFrame extends JFrame {
         bpc.anchor = GridBagConstraints.SOUTH;
         mainPanel.add(buttonsPanel, bpc);
 
-        JButton save = new JButton("Сохранить");
+        JButton save = new JButton("Подтвердить изменение стоимости");
         buttonsPanel.add(save);
+        save.addActionListener(e ->{
+            String str = text.getText();
+            Double mult = null;
+            try {
+                mult = Double.parseDouble(str.trim());
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "<html><i>Число должно быть вещественным</i>");
+            }
+            if(!mult.equals(null)){
+                if(increase.isSelected()){
+                    administrationController.increaseBoxPrices(mult);
+
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "<html><i>Цена аренды всех боксов была увеличена в " + str +" раз</i>");
+                }
+                else if(decrease.isSelected()){
+                    administrationController.decreaseBoxPrices(mult);
+
+                    JOptionPane.showMessageDialog(MainFrame.this,
+                            "<html><i>Цена аренды всех боксов была уменьшена в " + str +" раз</i>");
+                }
+
+            }
+
+        });
+        /*
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
-
+        */
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
