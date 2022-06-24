@@ -9,6 +9,8 @@ import edu.rsatu.garage.entities.Box;
 
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -17,12 +19,13 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
-
 
 public class MainFrame extends JFrame {
 
@@ -742,6 +745,8 @@ public class MainFrame extends JFrame {
         upperPanel.add(clientsPanel);
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         JComboBox<String> clients = new JComboBox<>(comboBoxModel);
+        List<Client> allClients = informationController.getAllClients();
+        comboBoxModel.addAll(allClients.stream().map(Client::getSurname).collect(Collectors.toList()));
         clientsPanel.add(clients);
         clientsPanel.add(new JLabel());
         clientsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -764,7 +769,8 @@ public class MainFrame extends JFrame {
         ncc.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(newClient, ncc);
 
-        JLabel info = new JLabel("<html>Клиент: <br/> </html>");
+        String infoDefaultText = "<html>Клиент: <br/> </html>";
+        JLabel info = new JLabel();
         GridBagConstraints ic = new GridBagConstraints();
         ic.weightx = 1;
         ic.weighty = 2;
@@ -773,6 +779,27 @@ public class MainFrame extends JFrame {
         ic.fill = GridBagConstraints.HORIZONTAL;
         ic.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(info, ic);
+        if (rentController.getCurrentClient() != null) {
+            info.setText("<html>Клиент: " + rentController.getCurrentClient().getSurname() + "<br/> Адрес: " +
+                    rentController.getCurrentClient().getAddress() + "</html>");
+        } else {
+            info.setText(infoDefaultText);
+        }
+
+        select.addActionListener(e -> {
+            int index = clients.getSelectedIndex();
+            if (index >= 0) {
+            rentController.setCurrentClient(allClients.get(index));
+            info.setText("<html>Клиент: " + rentController.getCurrentClient().getSurname() + "<br/> Адрес: " +
+                    rentController.getCurrentClient().getAddress() + "</html>");
+            } else {
+                JOptionPane.showMessageDialog(this, "Выберите клиента из списка");
+            }
+        });
+        cancelSelection.addActionListener(e -> {
+            rentController.setCurrentClient(null);
+            info.setText(infoDefaultText);
+        });
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -787,8 +814,12 @@ public class MainFrame extends JFrame {
         JButton nextStep = new JButton("Следующий шаг");
         buttonsPanel.add(nextStep);
         nextStep.addActionListener(e -> {
-            rentIssuePanels.add(mutablePanel);
-            setRentMutablePanel(getRentSecondPanel("Иванов", "г. Рыбинск, ул. Свободы, д. 19, кв. 125"));
+            if (rentController.getCurrentClient() == null) {
+                JOptionPane.showMessageDialog(this, "Не выбран клиент");
+            } else {
+                rentIssuePanels.add(mutablePanel);
+                setRentMutablePanel(getRentSecondPanel());
+            }
 
         });
         JButton cancel = new JButton("Отмена");
@@ -797,7 +828,7 @@ public class MainFrame extends JFrame {
         return  mutablePanel;
     }
 
-    private JPanel getRentSecondPanel(String clientSurname, String clientAddress) {
+    private JPanel getRentSecondPanel() {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
         JLabel caption = new JLabel("Выберите марку автомобиля", SwingConstants.CENTER);
         GridBagConstraints cc = new GridBagConstraints();
@@ -826,6 +857,8 @@ public class MainFrame extends JFrame {
         modelsPanel.add(models);
         modelsPanel.add(new JLabel());
         modelsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        List<Model> allModels = informationController.getAllModels();
+        comboBoxModel.addAll(allModels.stream().map(Model::getName).collect(Collectors.toList()));
 
         JPanel selectPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         JButton select = new JButton("Выбрать");
@@ -835,9 +868,9 @@ public class MainFrame extends JFrame {
         selectPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         upperPanel.add(selectPanel);
 
-        String infoText = "Клиент:<br/>" + "Фамилия: " + clientSurname + "<br/>" + "Адрес: "
-                + clientAddress;
-        JLabel info = new JLabel("<html>" + infoText + "</html>");
+        String defaultInfoText = "Клиент:<br/>" + "Фамилия: " + rentController.getCurrentClient().getSurname() + "<br/> Адрес: "
+                + rentController.getCurrentClient().getAddress();
+        JLabel info = new JLabel("<html>" + defaultInfoText + "</html>");
         GridBagConstraints ic = new GridBagConstraints();
         ic.weightx = 1;
         ic.weighty = 2;
@@ -846,6 +879,21 @@ public class MainFrame extends JFrame {
         ic.fill = GridBagConstraints.HORIZONTAL;
         ic.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(info, ic);
+
+        select.addActionListener(e -> {
+            int index = models.getSelectedIndex();
+            if (index >= 0) {
+                rentController.setCurrentModel(allModels.get(index));
+                info.setText("<html>" + defaultInfoText + "<br/> Марка автомобиля: " +
+                        rentController.getCurrentModel().getName() + "</html>");
+            } else {
+                JOptionPane.showMessageDialog(this, "Выберите марку из списка");
+            }
+        });
+        cancelSelection.addActionListener(e -> {
+            rentController.setCurrentModel(null);
+            info.setText("<html>" + defaultInfoText + "</html>");
+        });
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -860,17 +908,24 @@ public class MainFrame extends JFrame {
         JButton nextStep = new JButton("Следующий шаг");
         buttonsPanel.add(nextStep);
         nextStep.addActionListener(e -> {
-            rentIssuePanels.add(mutablePanel);
-            setRentMutablePanel(getRentThirdPanel(infoText, "Toyota Camry"));
+            if (rentController.getCurrentModel() == null) {
+                JOptionPane.showMessageDialog(this, "Не выбрана марка автомобиля");
+            } else {
+                rentIssuePanels.add(mutablePanel);
+                setRentMutablePanel(getRentThirdPanel(defaultInfoText));
+            }
         });
         JButton back = new JButton("Назад");
         buttonsPanel.add(back);
-        back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
+        back.addActionListener(e -> {
+            rentController.setCurrentModel(null);
+            setRentMutablePanel(rentIssuePanels.removeLast());
+        });
 
         return mutablePanel;
     }
 
-    private JPanel getRentThirdPanel(String prevInfo, String model) {
+    private JPanel getRentThirdPanel(String prevInfo) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
 
         JLabel caption = new JLabel("Выберите бокс", SwingConstants.CENTER);
@@ -900,6 +955,8 @@ public class MainFrame extends JFrame {
         boxesPanel.add(boxes);
         boxesPanel.add(new JLabel());
         boxesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        List<edu.rsatu.garage.entities.Box> allBoxes = informationController.getFreeBoxesForModel(rentController.getCurrentModel());
+        comboBoxModel.addAll(allBoxes.stream().map(box -> "" + box.getId() + " стоимость: " + box.getRentPrice()).collect(Collectors.toList()));
 
         JPanel selectPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         JButton select = new JButton("Выбрать");
@@ -909,8 +966,8 @@ public class MainFrame extends JFrame {
         selectPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         upperPanel.add(selectPanel);
 
-        String infoText = prevInfo + "<br/>Марка автомобиля: " + model;
-        JLabel info = new JLabel("<html>" + infoText + "</html>");
+        String defaultInfoText = prevInfo + "<br/>Марка автомобиля: " + rentController.getCurrentModel().getName();
+        JLabel info = new JLabel("<html>" + defaultInfoText + "</html>");
         GridBagConstraints ic = new GridBagConstraints();
         ic.weightx = 1;
         ic.weighty = 2;
@@ -919,6 +976,22 @@ public class MainFrame extends JFrame {
         ic.fill = GridBagConstraints.HORIZONTAL;
         ic.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(info, ic);
+
+        select.addActionListener(e -> {
+            int index = boxes.getSelectedIndex();
+            if (index >= 0) {
+                rentController.setCurrentBox(allBoxes.get(index));
+                info.setText("<html>" + defaultInfoText + "<br/> Бокс:" + rentController.getCurrentBox().getId() +
+                        " стоимость: " + rentController.getCurrentBox().getRentPrice() + "<html/>");
+            } else {
+                JOptionPane.showMessageDialog(this, "Выберите бокс из списка");
+            }
+        });
+        cancelSelection.addActionListener(e -> {
+            rentController.setCurrentBox(null);
+            info.setText("<html>" + defaultInfoText + "</html>");
+        });
+
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -933,21 +1006,28 @@ public class MainFrame extends JFrame {
         JButton nextStep = new JButton("Следующий шаг");
         buttonsPanel.add(nextStep);
         nextStep.addActionListener(e -> {
-            rentIssuePanels.add(mutablePanel);
-            setRentMutablePanel(getRentFinalPanel(infoText, "25", "1000"));
+            if (rentController.getCurrentBox() == null) {
+                JOptionPane.showMessageDialog(this, "Не выбран бокс");
+            } else {
+                rentIssuePanels.add(mutablePanel);
+                setRentMutablePanel(getRentFinalPanel(defaultInfoText));
+            }
         });
         JButton back = new JButton("Назад");
         buttonsPanel.add(back);
-        back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
+        back.addActionListener(e -> {
+            rentController.setCurrentBox(null);
+            setRentMutablePanel(rentIssuePanels.removeLast());
+        });
 
         return mutablePanel;
     }
 
-    private JPanel getRentFinalPanel(String previousInfo, String boxNumber, String price) {
+    private JPanel getRentFinalPanel(String previousInfo) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
 
-        String infoText = previousInfo + "<br/>Бокс: " + boxNumber + " Суточная стоимость: " + price;
-        JLabel caption = new JLabel("<html>" + infoText + "</html>");
+        String defaultInfoText = previousInfo + "<br/>Бокс: " + rentController.getCurrentBox().getId() + " стоимость: " + rentController.getCurrentBox().getRentPrice();
+        JLabel caption = new JLabel("<html>" + defaultInfoText + "</html>");
         GridBagConstraints cc = new GridBagConstraints();
         cc.weightx = 1;
         cc.weighty = 5;
@@ -1001,6 +1081,40 @@ public class MainFrame extends JFrame {
         sc.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(sum, sc);
 
+        startText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                getRentPrice(sum, startText, finishText);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                getRentPrice(sum, startText, finishText);
+            }
+        });
+
+        finishText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                getRentPrice(sum, startText, finishText);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                getRentPrice(sum, startText, finishText);
+            }
+        });
+
         JButton back = new JButton("Назад");
         GridBagConstraints bc = new GridBagConstraints();
         bc.weightx = 1;
@@ -1012,7 +1126,7 @@ public class MainFrame extends JFrame {
         mutablePanel.add(back, bc);
         back.addActionListener(e -> setRentMutablePanel(rentIssuePanels.removeLast()));
 
-        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         GridBagConstraints bpc = new GridBagConstraints();
         bpc.weightx = 1;
         bpc.weighty = 1;
@@ -1027,7 +1141,35 @@ public class MainFrame extends JFrame {
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
+        save.addActionListener(e -> {
+            if (!rentController.checkNumber(autoText.getText())) {
+                JOptionPane.showMessageDialog(this, "Неправильный формат номера автомобиля");
+            } else {
+                LocalDate startRentDate = rentController.getDateFromString(startText.getText());
+                LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
+                if (startRentDate == null || endRentDate == null) {
+                    JOptionPane.showMessageDialog(this, "Неправильный формат даты, должно быть дд.мм.гггг");
+                } else {
+                    rentController.addCar(rentController.getCurrentClient(), rentController.getCurrentModel(),
+                            rentController.getCurrentBox(), autoText.getText(), startRentDate, endRentDate);
+                    JOptionPane.showMessageDialog(this, "Аренда успешно оформлена");
+                }
+            }
+        });
+
         return mutablePanel;
+    }
+
+    private void getRentPrice(JLabel priceLabel, JTextField startText, JTextField finishText) {
+        Runnable calculate = () -> {
+            try {
+                double price = rentController.calculatePrice(startText.getText(),finishText.getText());
+                priceLabel.setText("Общая сумма: " + price);
+            } catch (RuntimeException e) {
+                //просто стоп
+            }
+        };
+        SwingUtilities.invokeLater(calculate);
     }
 
     private void setRentMutablePanel(JPanel newMutable) {

@@ -7,6 +7,7 @@ import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import java.util.regex.Matcher;
@@ -14,7 +15,16 @@ import java.util.regex.Pattern;
 
 public class RentController {
 
+    private Client currentClient = null;
+    private Model currentModel = null;
+    private Box currentBox = null;
+
+
     CarsDao carsDao = new CarsDao();
+
+    private static Pattern DATE_PATTERN = Pattern.compile(
+            "^\\d{2}.\\d{2}.\\d{4}$");
+
     public Long addCar(Client client, Model model, Box box, String carNumber,
                        LocalDate rentStartDate, LocalDate rentEndDate) {
         Car car = new Car(carNumber, model.getId(), client.getId(), box.getId(), rentStartDate, rentEndDate);
@@ -39,6 +49,29 @@ public class RentController {
         }
 
         return true;
+    }
+
+    public boolean checkDate(String date) {
+        return DATE_PATTERN.matcher(date).matches();
+    }
+
+    public LocalDate getDateFromString(String date) {
+        if (checkDate(date)) {
+            return LocalDate.of(Integer.parseInt(date.substring(6)), Integer.parseInt(date.substring(3, 5)), Integer.parseInt(date.substring(0, 2)));
+        }
+        return null;
+    }
+
+    public double calculatePrice(String startDate, String endDate) {
+        if (startDate == null || endDate == null) {
+            throw new RuntimeException("Нет даты");
+        }
+        return calculatePrice(getDateFromString(startDate), getDateFromString(endDate));
+    }
+
+    public double calculatePrice(LocalDate startDate, LocalDate endDate) {
+        long days = ChronoUnit.DAYS.between(startDate, endDate);
+        return currentBox.getRentPrice() * days;
     }
 
     /*что делать с этим выражением дальше ?
@@ -67,4 +100,27 @@ public class RentController {
         return carsDao.getAll();
     }
 
+    public Client getCurrentClient() {
+        return currentClient;
+    }
+
+    public void setCurrentClient(Client currentClient) {
+        this.currentClient = currentClient;
+    }
+
+    public Model getCurrentModel() {
+        return currentModel;
+    }
+
+    public void setCurrentModel(Model currentModel) {
+        this.currentModel = currentModel;
+    }
+
+    public Box getCurrentBox() {
+        return currentBox;
+    }
+
+    public void setCurrentBox(Box currentBox) {
+        this.currentBox = currentBox;
+    }
 }
