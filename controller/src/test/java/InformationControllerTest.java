@@ -116,7 +116,7 @@ public class InformationControllerTest {
         administrationController.addBox(1,2500.00,models);
         administrationController.addBox(2,3000.00,List.of(models.get(0)));
         List<Box> boxes = informationController.getAllBoxes();
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
@@ -180,8 +180,8 @@ public class InformationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         InformationController informationController = new InformationController();
 
-        administrationController.addClient("Sharov","AdressSharova");
-        administrationController.addClient("Zadorina","AdressZadorinoy");
+        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Zadorina","AdressZadorinoy");
 
         List<Client> clients = informationController.getAllClients();
         assertEquals(clients.get(0).getSurname(),"Sharov");
@@ -195,7 +195,7 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00, models);
         Box box = boxesDao.get(1).orElse(null);
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
@@ -212,7 +212,7 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
@@ -228,7 +228,7 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
@@ -245,7 +245,7 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);

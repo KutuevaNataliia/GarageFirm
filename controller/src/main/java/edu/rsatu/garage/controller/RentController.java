@@ -1,6 +1,7 @@
 package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.CarsDao;
+import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Client;
@@ -8,6 +9,7 @@ import edu.rsatu.garage.entities.Model;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.regex.Matcher;
@@ -18,9 +20,13 @@ public class RentController {
     private Client currentClient = null;
     private Model currentModel = null;
     private Box currentBox = null;
+    private Car currentCar = null;
+
+    private List<Client> clientsWithoutCar = new ArrayList<>();
 
 
-    CarsDao carsDao = new CarsDao();
+    private CarsDao carsDao = new CarsDao();
+    private ClientsDao clientsDao = new ClientsDao();
 
     private static Pattern DATE_PATTERN = Pattern.compile(
             "^\\d{2}.\\d{2}.\\d{4}$");
@@ -31,7 +37,7 @@ public class RentController {
         return carsDao.save(car).orElse(null);
     }
 
-    public boolean checkNumber(String carNumber){
+    public static boolean checkNumber(String carNumber){
         boolean result = true;
 
         if(carNumber.length()<8) return false;
@@ -100,6 +106,19 @@ public class RentController {
         return carsDao.getAll();
     }
 
+    public Long addClient(String surname, String address) {
+        Client client = new Client(surname,address);
+        return addClient(client);
+    }
+
+    public Long addClient(Client client) {
+        return clientsDao.save(client).orElse(null);
+    }
+
+    public void deleteClient(Client client) {
+        clientsDao.delete(client);
+    }
+
     public Client getCurrentClient() {
         return currentClient;
     }
@@ -122,5 +141,21 @@ public class RentController {
 
     public void setCurrentBox(Box currentBox) {
         this.currentBox = currentBox;
+    }
+
+    public List<Client> getClientsWithoutCar() {
+        return clientsWithoutCar;
+    }
+
+    public Car getCurrentCar() {
+        return currentCar;
+    }
+
+    public void setCurrentCar(Car currentCar) {
+        this.currentCar = currentCar;
+    }
+
+    public void setClientsWithoutCar(List<Client> clientsWithoutCar) {
+        this.clientsWithoutCar = clientsWithoutCar;
     }
 }

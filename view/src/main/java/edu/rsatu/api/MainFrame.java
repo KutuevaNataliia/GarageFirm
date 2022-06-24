@@ -19,6 +19,8 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -37,8 +39,6 @@ public class MainFrame extends JFrame {
     InformationController informationController = new InformationController();
 
     ModelsDao modelsDao = new ModelsDao();
-
-    RentController rentController = new RentController();
 
     public MainFrame() {
 
@@ -87,7 +87,7 @@ public class MainFrame extends JFrame {
         menuBar.add(services);
         JMenuItem startRenting = new JMenuItem("Оформить аренду");
         services.add(startRenting);
-        startRenting.addActionListener(e -> setMainPanel(getRentIssuePanel()));
+        startRenting.addActionListener(e -> setMainPanel(getRentIssuePanel(null)));
         JMenuItem finishRenting = new JMenuItem("Закрыть аренду");
         services.add(finishRenting);
         finishRenting.addActionListener(e -> setMainPanel(getRentClosePanel()));
@@ -687,7 +687,8 @@ public class MainFrame extends JFrame {
         return mainPanel;
     }
 
-    private JPanel getRentIssuePanel() {
+    private JPanel getRentIssuePanel(RentController controller) {
+        RentController rentController = controller != null ? controller : new RentController();
         JPanel mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
 
         JLabel caption = new JLabel("Оформление аренды", SwingConstants.CENTER);
@@ -711,14 +712,14 @@ public class MainFrame extends JFrame {
         mainPanel.add(rentIssueMutablePanel, mpc);
 
         rentIssuePanels.clear();
-        rentIssueMutablePanel.add(getRentFirstPanel());
+        rentIssueMutablePanel.add(getRentFirstPanel(rentController));
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
     }
 
-    private JPanel getRentFirstPanel() {
+    private JPanel getRentFirstPanel(RentController rentController) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
 
         JLabel caption = new JLabel("Выберите клиента", SwingConstants.CENTER);
@@ -746,6 +747,7 @@ public class MainFrame extends JFrame {
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         JComboBox<String> clients = new JComboBox<>(comboBoxModel);
         List<Client> allClients = informationController.getAllClients();
+        allClients.addAll(rentController.getClientsWithoutCar());
         comboBoxModel.addAll(allClients.stream().map(Client::getSurname).collect(Collectors.toList()));
         clientsPanel.add(clients);
         clientsPanel.add(new JLabel());
@@ -768,6 +770,7 @@ public class MainFrame extends JFrame {
         ncc.fill = GridBagConstraints.CENTER;
         ncc.anchor = GridBagConstraints.NORTH;
         mutablePanel.add(newClient, ncc);
+        newClient.addActionListener(e -> setMainPanel(getNewClientPanel(rentController)));
 
         String infoDefaultText = "<html>Клиент: <br/> </html>";
         JLabel info = new JLabel();
@@ -818,17 +821,20 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Не выбран клиент");
             } else {
                 rentIssuePanels.add(mutablePanel);
-                setRentMutablePanel(getRentSecondPanel());
+                setRentMutablePanel(getRentSecondPanel(rentController));
             }
 
         });
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> {
+
+        });
 
         return  mutablePanel;
     }
 
-    private JPanel getRentSecondPanel() {
+    private JPanel getRentSecondPanel(RentController rentController) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
         JLabel caption = new JLabel("Выберите марку автомобиля", SwingConstants.CENTER);
         GridBagConstraints cc = new GridBagConstraints();
@@ -912,7 +918,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Не выбрана марка автомобиля");
             } else {
                 rentIssuePanels.add(mutablePanel);
-                setRentMutablePanel(getRentThirdPanel(defaultInfoText));
+                setRentMutablePanel(getRentThirdPanel(rentController, defaultInfoText));
             }
         });
         JButton back = new JButton("Назад");
@@ -925,7 +931,7 @@ public class MainFrame extends JFrame {
         return mutablePanel;
     }
 
-    private JPanel getRentThirdPanel(String prevInfo) {
+    private JPanel getRentThirdPanel(RentController rentController, String prevInfo) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
 
         JLabel caption = new JLabel("Выберите бокс", SwingConstants.CENTER);
@@ -982,7 +988,7 @@ public class MainFrame extends JFrame {
             if (index >= 0) {
                 rentController.setCurrentBox(allBoxes.get(index));
                 info.setText("<html>" + defaultInfoText + "<br/> Бокс:" + rentController.getCurrentBox().getId() +
-                        " стоимость: " + rentController.getCurrentBox().getRentPrice() + "<html/>");
+                        " стоимость: " + rentController.getCurrentBox().getRentPrice() + "</html>");
             } else {
                 JOptionPane.showMessageDialog(this, "Выберите бокс из списка");
             }
@@ -1010,7 +1016,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "Не выбран бокс");
             } else {
                 rentIssuePanels.add(mutablePanel);
-                setRentMutablePanel(getRentFinalPanel(defaultInfoText));
+                setRentMutablePanel(getRentFinalPanel(rentController, defaultInfoText));
             }
         });
         JButton back = new JButton("Назад");
@@ -1023,7 +1029,7 @@ public class MainFrame extends JFrame {
         return mutablePanel;
     }
 
-    private JPanel getRentFinalPanel(String previousInfo) {
+    private JPanel getRentFinalPanel(RentController rentController, String previousInfo) {
         JPanel mutablePanel = new JPanel(new GridBagLayout());
 
         String defaultInfoText = previousInfo + "<br/>Бокс: " + rentController.getCurrentBox().getId() + " стоимость: " + rentController.getCurrentBox().getRentPrice();
@@ -1084,7 +1090,7 @@ public class MainFrame extends JFrame {
         startText.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                getRentPrice(sum, startText, finishText);
+                getRentPrice(rentController, sum, startText, finishText);
             }
 
             @Override
@@ -1094,14 +1100,14 @@ public class MainFrame extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                getRentPrice(sum, startText, finishText);
+                getRentPrice(rentController, sum, startText, finishText);
             }
         });
 
         finishText.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                getRentPrice(sum, startText, finishText);
+                getRentPrice(rentController, sum, startText, finishText);
             }
 
             @Override
@@ -1111,7 +1117,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                getRentPrice(sum, startText, finishText);
+                getRentPrice(rentController, sum, startText, finishText);
             }
         });
 
@@ -1141,26 +1147,12 @@ public class MainFrame extends JFrame {
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
-        save.addActionListener(e -> {
-            if (!rentController.checkNumber(autoText.getText())) {
-                JOptionPane.showMessageDialog(this, "Неправильный формат номера автомобиля");
-            } else {
-                LocalDate startRentDate = rentController.getDateFromString(startText.getText());
-                LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
-                if (startRentDate == null || endRentDate == null) {
-                    JOptionPane.showMessageDialog(this, "Неправильный формат даты, должно быть дд.мм.гггг");
-                } else {
-                    rentController.addCar(rentController.getCurrentClient(), rentController.getCurrentModel(),
-                            rentController.getCurrentBox(), autoText.getText(), startRentDate, endRentDate);
-                    JOptionPane.showMessageDialog(this, "Аренда успешно оформлена");
-                }
-            }
-        });
+        save.addActionListener(new AddCarListener(rentController, autoText, startText, finishText));
 
         return mutablePanel;
     }
 
-    private void getRentPrice(JLabel priceLabel, JTextField startText, JTextField finishText) {
+    private void getRentPrice(RentController rentController, JLabel priceLabel, JTextField startText, JTextField finishText) {
         Runnable calculate = () -> {
             try {
                 double price = rentController.calculatePrice(startText.getText(),finishText.getText());
@@ -1180,6 +1172,7 @@ public class MainFrame extends JFrame {
     }
 
     private JPanel getRentClosePanel() {
+        RentController rentController = new RentController();
         JPanel mainPanel = new JPanel(new GridBagLayout());
         JLabel caption = new JLabel("Закрытие аренды", SwingConstants.CENTER);
         GridBagConstraints cc = new GridBagConstraints();
@@ -1226,6 +1219,27 @@ public class MainFrame extends JFrame {
         ic.anchor = GridBagConstraints.NORTH;
         mainPanel.add(info, ic);
 
+        findAuto.addActionListener(e -> {
+            String number = autoNumber.getText();
+            if (RentController.checkNumber(number)) {
+                Car car = informationController.getCarByNumber(number);
+                rentController.setCurrentCar(car);
+                Client client = informationController.getClientById(car.getClientId());
+                rentController.setCurrentClient(client);
+                Model model = informationController.getModelById(car.getModelId());
+                rentController.setCurrentModel(model);
+                Box box =informationController.getBoxByNumber(car.getBoxId());
+                rentController.setCurrentBox(box);
+                info.setText("<html>Клиент: " + client.getSurname() + " Адрес: " + client.getAddress() +
+                        "<br/>Автомобиль марки: " + model.getName() +
+                        "<br/>находится в боксе: " + box.getId() +
+                        "<br/>с " + car.getRentStartDate().toString() +
+                        "<br/>Срок окончания аренды: " + car.getRentEndDate().toString() + "</html>");
+            } else {
+                JOptionPane.showMessageDialog(this, "Неправильный формат номера автомобиля");
+            }
+        });
+
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
         bpc.weightx = 1;
@@ -1241,6 +1255,65 @@ public class MainFrame extends JFrame {
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
+        save.addActionListener(new DeleteCarListener(rentController));
+
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+
+        return mainPanel;
+    }
+
+    private JPanel getNewClientPanel(RentController rentController) {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        JLabel caption = new JLabel("Добавление нового клиента", SwingConstants.CENTER);
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 1;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(caption, cc);
+
+        JPanel upperPanel = new JPanel(new GridLayout(2,2, 10, 20));
+        JLabel typeSurname = new JLabel("Введите фамилию", SwingConstants.LEFT);
+        upperPanel.add(typeSurname);
+        JTextField surname = new JTextField();
+        upperPanel.add(surname);
+        JLabel typeAddress = new JLabel("Введите адрес", SwingConstants.LEFT);
+        upperPanel.add(typeAddress);
+        JTextField address = new JTextField();
+        upperPanel.add(address);
+        GridBagConstraints uc = new GridBagConstraints();
+        uc.weightx = 1;
+        uc.weighty = 5;
+        uc.gridx = 0;
+        uc.gridy = 1;
+        uc.fill = GridBagConstraints.HORIZONTAL;
+        uc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(upperPanel, uc);
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 2;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton save = new JButton("Добавить клиента");
+        buttonsPanel.add(save);
+        save.addActionListener(e -> {
+            Client client = new Client(surname.getText(), address.getText());
+            rentController.getClientsWithoutCar().add(client);
+            setMainPanel(getRentIssuePanel(rentController));
+            JOptionPane.showMessageDialog(this, "Клиент успешно добавлен");
+        });
+        JButton cancel = new JButton("Отмена");
+        buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> setMainPanel(getRentIssuePanel(rentController)));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
@@ -1519,5 +1592,67 @@ public class MainFrame extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
+    }
+
+    private class AddCarListener implements ActionListener{
+        private RentController rentController;
+        private JTextField autoText;
+        private JTextField startText;
+        private JTextField finishText;
+
+        public AddCarListener(RentController rentController, JTextField autoText, JTextField startText, JTextField finishText) {
+            this.rentController = rentController;
+            this.autoText = autoText;
+            this.startText = startText;
+            this.finishText = finishText;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!RentController.checkNumber(autoText.getText())) {
+                JOptionPane.showMessageDialog(null, "Неправильный формат номера автомобиля");
+            } else {
+                LocalDate startRentDate = rentController.getDateFromString(startText.getText());
+                LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
+                if (startRentDate == null || endRentDate == null) {
+                    JOptionPane.showMessageDialog(null, "Неправильный формат даты, должно быть дд.мм.гггг");
+                } else {
+                    Client client = rentController.getCurrentClient();
+                    if (rentController.getClientsWithoutCar().contains(client)) {
+                        //Вот здесь нам может понадобиться транзакция, чтобы не было клиента без автомобиля,
+                        //т.к. это ограничение нашей предметной области
+                        Long id = rentController.addClient(client);
+                        client.setId(id);
+                    }
+                    rentController.addCar(client, rentController.getCurrentModel(),
+                            rentController.getCurrentBox(), autoText.getText(), startRentDate, endRentDate);
+                    rentController = new RentController();
+                    JOptionPane.showMessageDialog(null, "Аренда успешно оформлена");
+                }
+            }
+        }
+    }
+
+    private class DeleteCarListener implements ActionListener {
+        private RentController rentController = new RentController();
+
+        public DeleteCarListener(RentController rentController) {
+            this.rentController = rentController;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Car car = rentController.getCurrentCar();
+            if (car != null) {
+                //и здесь тоже нужна транзакция
+                Client client = rentController.getCurrentClient();
+                List<Car> allCars = informationController.getCarsForClient(client);
+                rentController.deleteCar(car.getNumber());
+                if (allCars.size() == 1) {
+                    rentController.deleteClient(client);
+                }
+                JOptionPane.showMessageDialog(null, "Аренда закрыта");
+            }
+        }
     }
 }

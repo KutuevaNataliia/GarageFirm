@@ -14,7 +14,6 @@ public class AdministrationController {
 
     private BoxesDao boxesDao = new BoxesDao();
     private ModelsDao modelsDao = new ModelsDao();
-    private ClientsDao clientsDao = new ClientsDao();
     private BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
 
     private InformationController informationController = new InformationController();
@@ -61,12 +60,5 @@ public class AdministrationController {
     public void decreaseBoxPrices(double number) {
         boxesDao.changeAllPrices(number, false);
     }
-
-    public boolean addClient(String surname, String address) {
-        Client client = new Client(surname,address);
-        clientsDao.save(client);
-        return true;
-    }
-
 
 }

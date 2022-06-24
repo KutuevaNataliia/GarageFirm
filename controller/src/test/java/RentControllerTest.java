@@ -64,7 +64,7 @@ public class RentControllerTest {
         model = modelsDao.get(modelId).orElse(null);
         assertNotNull(model);
         administrationController.addBox(1,500, List.of(model));
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         administrationController.addModel("Ford");
         List<Client> clients = informationController.getAllClients();
         List<Box> boxes = informationController.getAllBoxes();
@@ -96,7 +96,7 @@ public class RentControllerTest {
         model = modelsDao.get(modelId).orElse(null);
         assertNotNull(model);
         administrationController.addBox(1,500, List.of(model));
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         administrationController.addModel("Ford");
         List<Client> clients = informationController.getAllClients();
         List<Box> boxes = informationController.getAllBoxes();
@@ -120,7 +120,7 @@ public class RentControllerTest {
         model = modelsDao.get(modelId).orElse(null);
         assertNotNull(model);
         administrationController.addBox(1,500, List.of(model));
-        administrationController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Sharov","AdressSharova");
         administrationController.addModel("Ford");
         List<Client> clients = informationController.getAllClients();
         List<Box> boxes = informationController.getAllBoxes();
@@ -147,8 +147,8 @@ public class RentControllerTest {
         administrationController.addBox(1,500, List.of(models.get(0)));
         administrationController.addBox(2,1000, List.of(models.get(1)));
         List<Box> boxes = informationController.getAllBoxes();
-        administrationController.addClient("Sharov","AdressSharova");
-        administrationController.addClient("Zadorina","AdressZadorinoy");
+        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Zadorina","AdressZadorinoy");
         List<Client> clients = informationController.getAllClients();
 
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);

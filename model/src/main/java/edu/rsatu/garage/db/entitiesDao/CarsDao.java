@@ -3,6 +3,7 @@ package edu.rsatu.garage.db.entitiesDao;
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
 import edu.rsatu.garage.entities.Car;
+import edu.rsatu.garage.entities.Client;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -185,5 +186,32 @@ public class CarsDao implements Dao<Car, String>{
                 LOGGER.log(Level.SEVERE, null, ex);
             }
         });
+    }
+
+    public List<Car> getCarsForClientId(Long clientId) {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT * FROM car WHERE client_id = ?";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setLong(1, clientId);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    String number = resultSet.getString("carNum");
+                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    Integer boxId = resultSet.getInt("boxNum");
+                    Long modelId = resultSet.getLong("model_id");
+                    Car car = new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate);
+
+                    cars.add(car);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return cars;
     }
 }

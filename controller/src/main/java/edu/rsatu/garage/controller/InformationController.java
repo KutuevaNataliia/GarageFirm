@@ -2,9 +2,11 @@ package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
 import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
+import edu.rsatu.garage.db.entitiesDao.CarsDao;
 import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
@@ -17,6 +19,7 @@ public class InformationController {
     private ModelsDao modelsDao = new ModelsDao();
     private BoxesModelsDao boxesModelsDao = new BoxesModelsDao();
     private ClientsDao clientsDao = new ClientsDao();
+    private CarsDao carsDao = new CarsDao();
 
     public List<Box> getAllBoxes() {
         return  boxesDao.getAll();
@@ -36,7 +39,21 @@ public class InformationController {
         return boxesModelsDao.getFreeBoxesForModel(model);
     }
 
+    public Car getCarByNumber(String number) {
+        return carsDao.get(number).orElse(null);
+    }
 
+    public Client getClientById(Long id) {
+        return clientsDao.get(id).orElse(null);
+    }
+
+    public Model getModelById(Long id) {
+        return modelsDao.get(id).orElse(null);
+    }
+
+    public Box getBoxByNumber(int number) {
+        return boxesDao.get(number).orElse(null);
+    }
 
     public List<Model> getAllModels() {
 
@@ -83,5 +100,9 @@ public class InformationController {
     public List<Client> getClientsForModelDate(Model model, LocalDate date) {
 
         return clientsDao.getClientsForModelDate(model, date);
+    }
+
+    public List<Car> getCarsForClient(Client client) {
+        return carsDao.getCarsForClientId(client.getId());
     }
 }
