@@ -144,7 +144,7 @@ public class BoxesDao implements Dao<Box, Integer> {
         });
     }
 
-    public void changeAllPrices(int number, boolean increase) {
+    public void changeAllPrices(double number, boolean increase) {
         String sql;
         if (increase) {
             sql = "UPDATE box set rentprice = rentprice * ?";
@@ -153,7 +153,7 @@ public class BoxesDao implements Dao<Box, Integer> {
         }
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setInt(1, number);
+                statement.setDouble(1, number);
                 statement.executeUpdate();
                 LOGGER.log(Level.INFO, "Was the prices updated successfully");
             } catch (SQLException ex) {

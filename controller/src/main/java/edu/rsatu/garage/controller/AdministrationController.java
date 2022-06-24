@@ -54,11 +54,11 @@ public class AdministrationController {
         }
     }
 
-    public void increaseBoxPrices(int number) {
+    public void increaseBoxPrices(double number) {
         boxesDao.changeAllPrices(number, true);
     }
 
-    public void decreaseBoxPrices(int number) {
+    public void decreaseBoxPrices(double number) {
         boxesDao.changeAllPrices(number, false);
     }
 
