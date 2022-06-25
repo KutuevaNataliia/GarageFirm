@@ -539,7 +539,18 @@ public class MainFrame extends JFrame {
 
         JButton stopService = new JButton("Прекратить обслуживание");
         buttonsPanel.add(stopService);
-        stopService.addActionListener(e -> stopService(models.getSelectedItem(),models.getSelectedItem().toString(),models));
+        stopService.addActionListener(e -> {
+            int index = models.getSelectedIndex();
+            Model model = modelsG.get(index);
+            List<Car> cars = informationController.getCarsForModel(model);
+            if (!cars.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Невозможно удалить марку, т.к. она обслуживается в одном из занятых боксов");
+            } else {
+                administrationController.deleteModel(model);
+                models.removeItem(models.getSelectedItem());
+                JOptionPane.showMessageDialog(this, "Обслуживание марки прекращено");
+            }
+        });
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
 
@@ -611,14 +622,13 @@ public class MainFrame extends JFrame {
 
         //закрытие бокса - контроллер
         stopService.addActionListener(e -> {
-            String Select = boxes.getSelectedItem().toString();
-            Integer SelectID = null;
-            try {
-                SelectID = Integer.parseInt(Select.trim());
-            } catch (NumberFormatException nfe) {
-            }
-            if(!SelectID.equals(null)){
-                administrationController.deleteBoxById(SelectID);
+            int index = boxes.getSelectedIndex();
+            Box box = boxesG.get(index);
+            List<Car> cars = informationController.getCarsForBox(box);
+            if (!cars.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Невозможно удалить бокс, т.к. он занят");
+            } else {
+                administrationController.deleteBox(box);
                 boxes.removeItem(boxes.getSelectedItem());
                 JOptionPane.showMessageDialog(MainFrame.this,
                         "<html><i>Выбранный бокс был успешно закрыт</i>");

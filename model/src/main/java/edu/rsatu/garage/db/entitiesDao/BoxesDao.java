@@ -3,7 +3,6 @@ package edu.rsatu.garage.db.entitiesDao;
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
 import edu.rsatu.garage.entities.Box;
-import edu.rsatu.garage.entities.Model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -128,18 +127,28 @@ public class BoxesDao implements Dao<Box, Integer> {
     public void delete(Box box) {
         String message = "The box to be deleted should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
-        String sql = "DELETE FROM box WHERE boxNum = ?";
+        String removeModels = "DELETE FROM fit WHERE box_num = ?";
+        String deleteBox = "DELETE FROM box WHERE boxNum = ?";
         connection.ifPresent(conn -> {
-            try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setInt(1, nonNullBox.getId());
-
-                int numberOfDeletedRows = statement.executeUpdate();
+            try (PreparedStatement modelsStatement = conn.prepareStatement(removeModels);
+                    PreparedStatement boxesStatement = conn.prepareStatement(deleteBox)) {
+                conn.setAutoCommit(false);
+                modelsStatement.setInt(1, nonNullBox.getId());
+                modelsStatement.executeUpdate();
+                boxesStatement.setInt(1, nonNullBox.getId());
+                int numberOfDeletedRows = boxesStatement.executeUpdate();
+                conn.commit();
 
                 LOGGER.log(Level.INFO, "Was the box deleted successfully? {0}",
                         numberOfDeletedRows > 0);
 
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
+                try {
+                    conn.rollback();
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
+                }
             }
         });
     }

@@ -2,10 +2,8 @@ package edu.rsatu.garage.controller;
 
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
 import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
-import edu.rsatu.garage.db.entitiesDao.ClientsDao;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.Box;
-import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 import java.util.List;
@@ -27,8 +25,6 @@ public class AdministrationController {
     }
 
     public void deleteBox(Box box) {
-        List<Model> models = boxesModelsDao.getModelsForBox(box);
-        boxesModelsDao.deleteModelsFromBox(box, models);
         boxesDao.delete(box);
     }
 
@@ -50,7 +46,6 @@ public class AdministrationController {
 
     public void deleteModel(Model model) {
         modelsDao.delete(model);
-
     }
 
     public void deleteModelByName(String name) {

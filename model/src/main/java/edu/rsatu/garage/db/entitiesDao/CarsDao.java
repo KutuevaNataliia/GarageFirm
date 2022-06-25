@@ -214,4 +214,58 @@ public class CarsDao implements Dao<Car, String>{
         });
         return cars;
     }
+
+    public List<Car> getCarsForBoxNumber(Integer boxNum) {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT * FROM car WHERE boxnum = ?";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setInt(1, boxNum);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    String number = resultSet.getString("carNum");
+                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    Long modelId = resultSet.getLong("model_id");
+                    Long clientId = resultSet.getLong("client_id");
+                    Car car = new Car(number, modelId,clientId,boxNum,receiptNumber,rentStartDate,rentEndDate);
+
+                    cars.add(car);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return cars;
+    }
+
+    public List<Car> getCarsForModelId(Long modelId) {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT * FROM car WHERE model_id = ?";
+        connection.ifPresent(conn -> {
+            try (PreparedStatement statement = conn.prepareStatement(sql)) {
+
+                statement.setLong(1, modelId);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    String number = resultSet.getString("carNum");
+                    LocalDate rentStartDate =  resultSet.getObject("rental_start_date", LocalDate.class);
+                    LocalDate rentEndDate = resultSet.getObject("rental_end_date", LocalDate.class);
+                    Long receiptNumber = resultSet.getLong("rectNum");
+                    Integer boxId = resultSet.getInt("boxNum");
+                    Long clientId = resultSet.getLong("client_id");
+                    Car car = new Car(number, modelId,clientId,boxId,receiptNumber,rentStartDate,rentEndDate);
+
+                    cars.add(car);
+                }
+
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return cars;
+    }
 }

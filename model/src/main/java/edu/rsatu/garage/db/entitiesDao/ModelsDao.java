@@ -141,18 +141,28 @@ public class ModelsDao implements Dao<Model, Long>{
     public void delete(Model model) {
         String message = "The model to be deleted should not be null";
         Model nonNullModel = Objects.requireNonNull(model, message);
-        String sql = "DELETE FROM model WHERE id = ?";
+        String deleteFromBoxes = "DELETE FROM fit WHERE model_id = ?";
+        String deleteModel = "DELETE FROM model WHERE id = ?";
         connection.ifPresent(conn -> {
-            try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setLong(1, nonNullModel.getId());
-
-                int numberOfDeletedRows = statement.executeUpdate();
+            try (PreparedStatement boxesStatement = conn.prepareStatement(deleteFromBoxes);
+                        PreparedStatement modelsStatement = conn.prepareStatement(deleteModel)) {
+                conn.setAutoCommit(false);
+                boxesStatement.setLong(1, nonNullModel.getId());
+                boxesStatement.executeUpdate();
+                modelsStatement.setLong(1, nonNullModel.getId());
+                int numberOfDeletedRows = modelsStatement.executeUpdate();
+                conn.commit();
 
                 LOGGER.log(Level.INFO, "Was the model deleted successfully? {0}",
                         numberOfDeletedRows > 0);
 
             } catch (SQLException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
+                try {
+                    conn.rollback();
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
+                }
             }
         });
     }

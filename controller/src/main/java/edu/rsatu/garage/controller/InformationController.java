@@ -109,4 +109,12 @@ public class InformationController {
     public List<Car> getCarsForClient(Client client) {
         return carsDao.getCarsForClientId(client.getId());
     }
+
+    public List<Car> getCarsForBox(Box box) {
+        return carsDao.getCarsForBoxNumber(box.getId());
+    }
+
+    public List<Car> getCarsForModel(Model model) {
+        return carsDao.getCarsForModelId(model.getId());
+    }
 }
