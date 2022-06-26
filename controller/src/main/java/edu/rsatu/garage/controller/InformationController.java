@@ -29,17 +29,23 @@ public class InformationController {
     }
 
     public List<Box> getFreeBoxes() {
-        return boxesDao.getFreeBoxes();
+        List<Box> boxes = boxesDao.getFreeBoxes();
+        Collections.sort(boxes);
+        return boxes;
+
     }
 
     public List<Box> getBoxesForModel(Model model) {
-
-        return boxesModelsDao.getBoxesForModel(model);
+        List<Box> boxes = boxesModelsDao.getBoxesForModel(model);
+        Collections.sort(boxes);
+        return boxes;
     }
 
     public List<Box> getFreeBoxesForModel(Model model) {
-
+        List<Box> boxes = boxesModelsDao.getBoxesForModel(model);
+        Collections.sort(boxes);
         return boxesModelsDao.getFreeBoxesForModel(model);
+
     }
 
     public Car getCarByNumber(String number) {

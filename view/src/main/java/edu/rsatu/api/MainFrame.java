@@ -1436,7 +1436,6 @@ public class MainFrame extends JFrame {
         uc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(forModelPanel, uc);
 
-
         all.addActionListener(e -> {
             if (all.isSelected()) {
                 free.setSelected(false);
@@ -1579,7 +1578,14 @@ public class MainFrame extends JFrame {
 
 
         for(Box box:boxesX){
-            listModel.add(listModel.getSize(), "Бокс №" + box.getId() + "       цена аренды: " + box.getRentPrice() + " Р");
+            Client client = informationController.getClientForBox(box);
+            String cliName = "-";
+            if(client != null){
+                cliName = client.getSurname();
+            }
+
+            listModel.add(listModel.getSize(), "Бокс №" + box.getId() + "       " + "цена аренды: " + box.getRentPrice() +
+                    " Р" + "       " + "владелец: " + cliName);
         }
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
