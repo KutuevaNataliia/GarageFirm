@@ -1397,7 +1397,7 @@ public class MainFrame extends JFrame {
         JPanel optionPanel = new JPanel(new GridLayout(3, 1, 10, 10));
         GridBagConstraints opc = new GridBagConstraints();
         opc.weightx = 1;
-        opc.weighty = 3;
+        opc.weighty = 1;
         opc.gridx = 0;
         opc.gridy = 1;
         opc.fill = GridBagConstraints.HORIZONTAL;
@@ -1406,20 +1406,12 @@ public class MainFrame extends JFrame {
 
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         JComboBox<String> models = new JComboBox<>(comboBoxModel);
-        GridBagConstraints mc = new GridBagConstraints();
-        mc.weightx = 1;
-        mc.weighty = 5;
-        mc.gridx = 0;
-        mc.gridy = 2;
-        mc.fill = GridBagConstraints.CENTER;
-        mc.anchor = GridBagConstraints.NORTHWEST;
-        mainPanel.add(models, mc);
 
         List<Model> modelsG = informationController.getAllModels();
         for(Model model:modelsG){
             models.addItem(model.getName());
         }
-        //надо бы делать невидимым по хорошему
+        //надо бы делать невидимым по хорошему, но как?
         models.setEnabled(false);
 
 
@@ -1430,6 +1422,19 @@ public class MainFrame extends JFrame {
         optionPanel.add(all);
         optionPanel.add(free);
         optionPanel.add(forModel);
+
+        JPanel forModelPanel = new JPanel(new GridLayout(1,2, 10, 20));
+        forModelPanel.add(forModel);
+        forModelPanel.add(models);
+
+        GridBagConstraints uc = new GridBagConstraints();
+        uc.weightx = 1;
+        uc.weighty = 5;
+        uc.gridx = 0;
+        uc.gridy = 2;
+        uc.fill = GridBagConstraints.HORIZONTAL;
+        uc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(forModelPanel, uc);
 
 
         all.addActionListener(e -> {
