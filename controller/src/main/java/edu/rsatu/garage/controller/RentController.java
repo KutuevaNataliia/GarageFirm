@@ -6,6 +6,7 @@ import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
+import edu.rsatu.garage.exceptions.DateException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -61,6 +62,23 @@ public class RentController {
         return DATE_PATTERN.matcher(date).matches();
     }
 
+    public long getInterval(LocalDate start, LocalDate end) {
+        if (start == null || end == null) {
+            throw new DateException("Нет даты");
+        }
+        if (start.isBefore(LocalDate.now())) {
+            throw new DateException("Дата начала должна быть не меньше, чем сегодняшняя");
+        }
+        long days = ChronoUnit.DAYS.between(start, end);
+        if (days < 1) {
+            throw new DateException("Дата окончания аренды должна быть больше даты начала на 1 или более дней");
+        }
+        if (days > 365) {
+            throw new DateException("Бокс не может быть арендован более, чем на 365 дней");
+        }
+        return days;
+    }
+
     public LocalDate getDateFromString(String date) {
         if (checkDate(date)) {
             return LocalDate.of(Integer.parseInt(date.substring(6)), Integer.parseInt(date.substring(3, 5)), Integer.parseInt(date.substring(0, 2)));
@@ -70,13 +88,15 @@ public class RentController {
 
     public double calculatePrice(String startDate, String endDate) {
         if (startDate == null || endDate == null) {
-            throw new RuntimeException("Нет даты");
+            throw new DateException("Нет даты");
         }
-        return calculatePrice(getDateFromString(startDate), getDateFromString(endDate));
+        LocalDate start = getDateFromString(startDate);
+        LocalDate end = getDateFromString(endDate);
+        long days = getInterval(start, end);
+        return calculatePrice(days);
     }
 
-    public double calculatePrice(LocalDate startDate, LocalDate endDate) {
-        long days = ChronoUnit.DAYS.between(startDate, endDate);
+    public double calculatePrice(long days) {
         return currentBox.getRentPrice() * days;
     }
 

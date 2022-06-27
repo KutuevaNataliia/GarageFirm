@@ -6,6 +6,7 @@ import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.db.entitiesDao.ModelsDao;
 import edu.rsatu.garage.entities.*;
 import edu.rsatu.garage.entities.Box;
+import edu.rsatu.garage.exceptions.DateException;
 
 
 import javax.swing.*;
@@ -41,7 +42,6 @@ public class MainFrame extends JFrame {
     ModelsDao modelsDao = new ModelsDao();
 
     public MainFrame() {
-
 
 
         getContentPane().setLayout(new GridBagLayout());
@@ -159,7 +159,7 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(caption, cc);
 
-        JPanel upperPanel = new JPanel(new GridLayout(2,2, 10, 20));
+        JPanel upperPanel = new JPanel(new GridLayout(2, 2, 10, 20));
         JLabel typeNumber = new JLabel("Введите номер", SwingConstants.LEFT);
         upperPanel.add(typeNumber);
         JTextField number = new JTextField();
@@ -225,7 +225,7 @@ public class MainFrame extends JFrame {
 
         //добавление в список
         List<Model> modelsG = informationController.getAllModels();
-        for(Model model:modelsG){
+        for (Model model : modelsG) {
             models.addItem(model.getName());
         }
         //****************************************************************************************************************************************************
@@ -274,25 +274,25 @@ public class MainFrame extends JFrame {
 
             List<String> modelsT = new ArrayList<>();
             for (int i = 0; i < selected.getModel().getSize(); i++) {
-               modelsT.add(String.valueOf(selected.getModel().getElementAt(i)));
+                modelsT.add(String.valueOf(selected.getModel().getElementAt(i)));
             }
 
             String model = models.getSelectedItem().toString();
             List<String> modelsC = selected.getSelectedValuesList();
-            if(!modelsT.contains(models.getSelectedItem())){
+            if (!modelsT.contains(models.getSelectedItem())) {
                 listModel.add(listModel.getSize(), model);
             }
 
         });
 
-        delete.addActionListener(e ->{
+        delete.addActionListener(e -> {
 
             String model = models.getSelectedItem().toString();
             List<String> modelsT = new ArrayList<>();
             for (int i = 0; i < selected.getModel().getSize(); i++) {
                 modelsT.add(String.valueOf(selected.getModel().getElementAt(i)));
             }
-            if(modelsT.contains(models.getSelectedItem())){
+            if (modelsT.contains(models.getSelectedItem())) {
                 listModel.removeElement(models.getSelectedItem().toString());
             }
         });
@@ -317,7 +317,7 @@ public class MainFrame extends JFrame {
             int id = 1;
             Double pr = 1.0;
             List<Box> boxes = informationController.getAllBoxes();
-            if(!number.getText().isEmpty()) {
+            if (!number.getText().isEmpty()) {
                 if (!price.getText().isEmpty()) {
                     boolean cont = true;
                     try {
@@ -345,44 +345,43 @@ public class MainFrame extends JFrame {
                                     check = false;
                                 }
                             }
-                                if (check) {
+                            if (check) {
 
-                                    //получение названий выбранных моделей
-                                    List<String> names = new ArrayList<>();
-                                    for (int i = 0; i < selected.getModel().getSize(); i++) {
-                                        names.add(String.valueOf(selected.getModel().getElementAt(i)));
+                                //получение названий выбранных моделей
+                                List<String> names = new ArrayList<>();
+                                for (int i = 0; i < selected.getModel().getSize(); i++) {
+                                    names.add(String.valueOf(selected.getModel().getElementAt(i)));
+                                }
+                                if (names.size() != 0) {
+                                    //можно записывать в БД
+                                    //формирование списка выбранных моделей из БД
+                                    List<Model> modelsZ = new ArrayList<>();
+                                    // List<Model> modelsT = informationController.getAllModels();
+                                    for (String name : names) {
+                                        modelsZ.add(informationController.getModelByName(name));
                                     }
-                                    if(names.size() != 0){
-                                        //можно записывать в БД
-                                        //формирование списка выбранных моделей из БД
-                                        List<Model> modelsZ = new ArrayList<>();
-                                        // List<Model> modelsT = informationController.getAllModels();
-                                        for(String name: names){
-                                            modelsZ.add(informationController.getModelByName(name));
-                                        }
-                                        administrationController.addBox(id,pr,modelsZ);
-                                        JOptionPane.showMessageDialog(MainFrame.this,
-                                                "<html><i>Бокс успешно добавлен</i>");
-                                    }
-                                    else{
-                                        JOptionPane.showMessageDialog(MainFrame.this,
-                                                "<html><i>Выберите хотя бы одну модель</i>");
-                                    }
-
+                                    administrationController.addBox(id, pr, modelsZ);
+                                    JOptionPane.showMessageDialog(MainFrame.this,
+                                            "<html><i>Бокс успешно добавлен</i>");
                                 } else {
                                     JOptionPane.showMessageDialog(MainFrame.this,
-                                            "<html><i>Бокс с таким id уже есть в базе данных</i>");
+                                            "<html><i>Выберите хотя бы одну модель</i>");
                                 }
+
+                            } else {
+                                JOptionPane.showMessageDialog(MainFrame.this,
+                                        "<html><i>Бокс с таким id уже есть в базе данных</i>");
                             }
                         }
-                    } else {
-                        JOptionPane.showMessageDialog(MainFrame.this,
-                                "<html><i>Цена не может быть пустой</i>");
                     }
                 } else {
                     JOptionPane.showMessageDialog(MainFrame.this,
-                            "<html><i>Номер бокса не может быть пустым</i>");
+                            "<html><i>Цена не может быть пустой</i>");
                 }
+            } else {
+                JOptionPane.showMessageDialog(MainFrame.this,
+                        "<html><i>Номер бокса не может быть пустым</i>");
+            }
 
             System.out.println("End");
         });
@@ -414,7 +413,7 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(caption, cc);
 
-        JPanel upperPanel = new JPanel(new GridLayout(2,2, 10, 20));
+        JPanel upperPanel = new JPanel(new GridLayout(2, 2, 10, 20));
         JLabel typeName = new JLabel("Введите название", SwingConstants.LEFT);
         upperPanel.add(typeName);
         JTextField nameM = new JTextField();
@@ -456,35 +455,31 @@ public class MainFrame extends JFrame {
     }
 
 
-
     //обработчик добавления модели
-    private void addModel(String name){
+    private void addModel(String name) {
         System.out.println("Модель: " + name);
-        if(!name.isEmpty()){
+        if (!name.isEmpty()) {
             List<Model> models = informationController.getAllModels();
             boolean check = true;
-            for(Model model: models){
-                if(model.getName().equals(name)) {
+            for (Model model : models) {
+                if (model.getName().equals(name)) {
                     check = false;
                     break;
                 }
             }
-            if(check){
+            if (check) {
                 administrationController.addModel(name);
                 JOptionPane.showMessageDialog(MainFrame.this,
                         "<html><i>Модель успешно добавлена в базу данных</i>");
-            }
-            else{
+            } else {
                 JOptionPane.showMessageDialog(MainFrame.this,
                         "<html><i>Такая модель уже имеется в базе данных</i>");
             }
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(MainFrame.this,
                     "<html><i>Название модели не может быть пустым</i>");
         }
     }
-
 
 
     private JPanel getDeleteModelPanel() {
@@ -522,7 +517,7 @@ public class MainFrame extends JFrame {
 
         //добавление в список
         List<Model> modelsG = informationController.getAllModels();
-        for(Model model:modelsG){
+        for (Model model : modelsG) {
             models.addItem(model.getName());
         }
 
@@ -558,8 +553,9 @@ public class MainFrame extends JFrame {
 
         return mainPanel;
     }
+
     //удаление модели
-    private void stopService(Object item,String nameModel,JComboBox<String> models){
+    private void stopService(Object item, String nameModel, JComboBox<String> models) {
         System.out.println(nameModel);
         administrationController.deleteModelByName(nameModel);
         models.removeItem(item);
@@ -602,7 +598,7 @@ public class MainFrame extends JFrame {
 
         //заполнить список боксов при заходе на форму
         List<Box> boxesG = informationController.getAllBoxes();
-        for(Box box:boxesG){
+        for (Box box : boxesG) {
             boxes.addItem(box.getId().toString());
         }
 
@@ -706,10 +702,10 @@ public class MainFrame extends JFrame {
 
         JButton save = new JButton("Подтвердить изменение стоимости");
         buttonsPanel.add(save);
-        save.addActionListener(e ->{
+        save.addActionListener(e -> {
 
             String str = text.getText();
-            if(!str.equals("")){
+            if (!str.equals("")) {
                 Double mult = null;
                 try {
                     mult = Double.parseDouble(str.trim());
@@ -717,23 +713,21 @@ public class MainFrame extends JFrame {
                     JOptionPane.showMessageDialog(MainFrame.this,
                             "<html><i>Число должно быть вещественным</i>");
                 }
-                if(!mult.equals(null)){
-                    if(increase.isSelected()){
+                if (!mult.equals(null)) {
+                    if (increase.isSelected()) {
                         administrationController.increaseBoxPrices(mult);
 
                         JOptionPane.showMessageDialog(MainFrame.this,
-                                "<html><i>Цена аренды всех боксов была увеличена в " + str +" раз</i>");
-                    }
-                    else if(decrease.isSelected()){
+                                "<html><i>Цена аренды всех боксов была увеличена в " + str + " раз</i>");
+                    } else if (decrease.isSelected()) {
                         administrationController.decreaseBoxPrices(mult);
 
                         JOptionPane.showMessageDialog(MainFrame.this,
-                                "<html><i>Цена аренды всех боксов была уменьшена в " + str +" раз</i>");
+                                "<html><i>Цена аренды всех боксов была уменьшена в " + str + " раз</i>");
                     }
 
                 }
-            }
-            else{
+            } else {
                 JOptionPane.showMessageDialog(MainFrame.this,
                         "<html><i>Введите значение!</i>");
             }
@@ -854,9 +848,9 @@ public class MainFrame extends JFrame {
         select.addActionListener(e -> {
             int index = clients.getSelectedIndex();
             if (index >= 0) {
-            rentController.setCurrentClient(allClients.get(index));
-            info.setText("<html>Клиент: " + rentController.getCurrentClient().getSurname() + "<br/> Адрес: " +
-                    rentController.getCurrentClient().getAddress() + "</html>");
+                rentController.setCurrentClient(allClients.get(index));
+                info.setText("<html>Клиент: " + rentController.getCurrentClient().getSurname() + "<br/> Адрес: " +
+                        rentController.getCurrentClient().getAddress() + "</html>");
             } else {
                 JOptionPane.showMessageDialog(this, "Выберите клиента из списка");
             }
@@ -893,7 +887,7 @@ public class MainFrame extends JFrame {
 
         });
 
-        return  mutablePanel;
+        return mutablePanel;
     }
 
     private JPanel getRentSecondPanel(RentController rentController) {
@@ -1139,7 +1133,7 @@ public class MainFrame extends JFrame {
         JTextField finishText = new JTextField();
         datesPanel.add(finishText);
 
-        JLabel sum = new JLabel("Общая сумма", SwingConstants.LEFT);
+        JLabel sum = new JLabel("Общая сумма:", SwingConstants.LEFT);
         GridBagConstraints sc = new GridBagConstraints();
         sc.weightx = 1;
         sc.weighty = 1;
@@ -1157,7 +1151,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-
+                getRentPrice(rentController, sum, startText, finishText);
             }
 
             @Override
@@ -1174,7 +1168,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-
+                getRentPrice(rentController, sum, startText, finishText);
             }
 
             @Override
@@ -1216,11 +1210,16 @@ public class MainFrame extends JFrame {
 
     private void getRentPrice(RentController rentController, JLabel priceLabel, JTextField startText, JTextField finishText) {
         Runnable calculate = () -> {
-            try {
-                double price = rentController.calculatePrice(startText.getText(),finishText.getText());
-                priceLabel.setText("Общая сумма: " + price);
-            } catch (RuntimeException e) {
-                //просто стоп
+            if (startText.getText() != null && startText.getText().length() == 10 &&
+                    finishText.getText() != null && finishText.getText().length() == 10) {
+                try {
+                    double price = rentController.calculatePrice(startText.getText(), finishText.getText());
+                    priceLabel.setText("Общая сумма: " + price);
+                } catch (DateException e) {
+                    priceLabel.setText("Общая сумма:");
+                }
+            } else {
+                priceLabel.setText("Общая сумма:");
             }
         };
         SwingUtilities.invokeLater(calculate);
@@ -1290,7 +1289,7 @@ public class MainFrame extends JFrame {
                 rentController.setCurrentClient(client);
                 Model model = informationController.getModelById(car.getModelId());
                 rentController.setCurrentModel(model);
-                Box box =informationController.getBoxByNumber(car.getBoxId());
+                Box box = informationController.getBoxByNumber(car.getBoxId());
                 rentController.setCurrentBox(box);
                 info.setText("<html>Клиент: " + client.getSurname() + " Адрес: " + client.getAddress() +
                         "<br/>Автомобиль марки: " + model.getName() +
@@ -1337,7 +1336,7 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(caption, cc);
 
-        JPanel upperPanel = new JPanel(new GridLayout(2,2, 10, 20));
+        JPanel upperPanel = new JPanel(new GridLayout(2, 2, 10, 20));
         JLabel typeSurname = new JLabel("Введите фамилию", SwingConstants.LEFT);
         upperPanel.add(typeSurname);
         JTextField surname = new JTextField();
@@ -1408,7 +1407,7 @@ public class MainFrame extends JFrame {
         JComboBox<String> models = new JComboBox<>(comboBoxModel);
 
         List<Model> modelsG = informationController.getAllModels();
-        for(Model model:modelsG){
+        for (Model model : modelsG) {
             models.addItem(model.getName());
         }
         //надо бы делать невидимым по хорошему, но как?
@@ -1423,7 +1422,7 @@ public class MainFrame extends JFrame {
         optionPanel.add(free);
         optionPanel.add(forModel);
 
-        JPanel forModelPanel = new JPanel(new GridLayout(1,2, 10, 20));
+        JPanel forModelPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         forModelPanel.add(forModel);
         forModelPanel.add(models);
 
@@ -1452,12 +1451,10 @@ public class MainFrame extends JFrame {
             if (forModel.isSelected()) {
                 all.setSelected(false);
                 models.setEnabled(true);
-            }
-            else{
+            } else {
                 models.setEnabled(false);
             }
         });
-
 
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
@@ -1474,13 +1471,11 @@ public class MainFrame extends JFrame {
         buttonsPanel.add(save);
         //
         save.addActionListener(e -> {
-            if(all.isSelected()||free.isSelected()||forModel.isSelected())
-            {
-                if(forModel.isSelected()){
-                    setMainPanel(BoxesInfo(all.isSelected(),free.isSelected(),forModel.isSelected(),models.getSelectedItem().toString()));
-                }
-                else{
-                    setMainPanel(BoxesInfo(all.isSelected(),free.isSelected(),forModel.isSelected(),""));
+            if (all.isSelected() || free.isSelected() || forModel.isSelected()) {
+                if (forModel.isSelected()) {
+                    setMainPanel(BoxesInfo(all.isSelected(), free.isSelected(), forModel.isSelected(), models.getSelectedItem().toString()));
+                } else {
+                    setMainPanel(BoxesInfo(all.isSelected(), free.isSelected(), forModel.isSelected(), ""));
                 }
             }
         });
@@ -1517,20 +1512,20 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.PAGE_START;
         int r = 0;
 
-        if(all){
+        if (all) {
             text = text1;
             r = 1;
-        } else{
-            if(free){
-                if(forModel){
+        } else {
+            if (free) {
+                if (forModel) {
                     text = text4;
                     r = 4;
-                } else{
+                } else {
                     text = text2;
                     r = 2;
                 }
 
-            } else if(forModel){
+            } else if (forModel) {
                 text = text3;
                 r = 3;
             }
@@ -1559,28 +1554,24 @@ public class MainFrame extends JFrame {
 
         List<Box> boxesX = new ArrayList<>();
 
-        if(r == 1){
+        if (r == 1) {
             boxesX = informationController.getAllBoxes();
-        }
-        else if(r == 2)
-        {
+        } else if (r == 2) {
             boxesX = informationController.getFreeBoxes();
-        }
-        else if(r == 3){
+        } else if (r == 3) {
             boxesX = informationController.getBoxesForModel(informationController.getModelByName(modelName));
-        }
-        else if(r == 4){
+        } else if (r == 4) {
             boxesX = informationController.getFreeBoxesForModel(informationController.getModelByName(modelName));
         }
-        if(boxesX.size() == 0){
+        if (boxesX.size() == 0) {
             listModel.add(listModel.getSize(), "отсутствуют");
         }
 
 
-        for(Box box:boxesX){
+        for (Box box : boxesX) {
             Client client = informationController.getClientForBox(box);
             String cliName = "-";
-            if(client != null){
+            if (client != null) {
                 cliName = client.getSurname();
             }
 
@@ -1803,7 +1794,7 @@ public class MainFrame extends JFrame {
         return mainPanel;
     }
 
-    private class AddCarListener implements ActionListener{
+    private class AddCarListener implements ActionListener {
         private RentController rentController;
         private JTextField autoText;
         private JTextField startText;
@@ -1818,32 +1809,43 @@ public class MainFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (!RentController.checkNumber(autoText.getText())) {
+            String number = autoText.getText().trim();
+            if (!RentController.checkNumber(number)) {
                 JOptionPane.showMessageDialog(null, "Неправильный формат номера автомобиля");
             } else {
-                LocalDate startRentDate = rentController.getDateFromString(startText.getText());
-                LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
-                if (startRentDate == null || endRentDate == null) {
-                    JOptionPane.showMessageDialog(null, "Неправильный формат даты, должно быть дд.мм.гггг");
+                Car oldCar = informationController.getCarByNumber(number);
+                if (oldCar != null) {
+                    JOptionPane.showMessageDialog(null, "Данный автомобиль уже находится в одном из боксов");
                 } else {
-                    Client client = rentController.getCurrentClient();
-                    if (rentController.getClientsWithoutCar().contains(client)) {
-                        //Вот здесь нам может понадобиться транзакция, чтобы не было клиента без автомобиля,
-                        //т.к. это ограничение нашей предметной области
-                        Long id = rentController.addClient(client);
-                        client.setId(id);
+                    LocalDate startRentDate = rentController.getDateFromString(startText.getText().trim());
+                    LocalDate endRentDate = rentController.getDateFromString(finishText.getText().trim());
+                    if (startRentDate == null || endRentDate == null) {
+                        JOptionPane.showMessageDialog(null, "Неправильный формат даты, должно быть дд.мм.гггг");
+                    } else {
+                        try {
+                            rentController.getInterval(startRentDate, endRentDate);
+                            Client client = rentController.getCurrentClient();
+                            if (rentController.getClientsWithoutCar().contains(client)) {
+                                //Вот здесь нам может понадобиться транзакция, чтобы не было клиента без автомобиля,
+                                //т.к. это ограничение нашей предметной области
+                                Long id = rentController.addClient(client);
+                                client.setId(id);
+                            }
+                            rentController.addCar(client, rentController.getCurrentModel(),
+                                    rentController.getCurrentBox(), number, startRentDate, endRentDate);
+                            rentController = new RentController();
+                            JOptionPane.showMessageDialog(null, "Аренда успешно оформлена");
+                        } catch (DateException ex) {
+                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                        }
                     }
-                    rentController.addCar(client, rentController.getCurrentModel(),
-                            rentController.getCurrentBox(), autoText.getText(), startRentDate, endRentDate);
-                    rentController = new RentController();
-                    JOptionPane.showMessageDialog(null, "Аренда успешно оформлена");
                 }
             }
         }
     }
 
     private class DeleteCarListener implements ActionListener {
-        private RentController rentController = new RentController();
+        private RentController rentController;
 
         public DeleteCarListener(RentController rentController) {
             this.rentController = rentController;
@@ -1864,4 +1866,5 @@ public class MainFrame extends JFrame {
             }
         }
     }
+
 }
