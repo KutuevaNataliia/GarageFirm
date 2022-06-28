@@ -21,6 +21,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -230,8 +231,9 @@ public class ModelsInfoPanel extends MainPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             List<List<String>> records = models.stream().map(m -> List.of(m.getName())).collect(Collectors.toList());
+            String filename = "Справка_марки_" + LocalDateTime.now().format(DocsHelper.DATE_TIME_FORMATTER) +".docx";
             try {
-                DocsHelper.generateNote(title, records, "Справка_марки.docx");
+                DocsHelper.generateNote(title, records, filename);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

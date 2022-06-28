@@ -17,10 +17,13 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DocsHelper {
+
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss");
 
     public static void generateReceipt(long receiptNumber, String carNumber,
                                        Client client, double sumPrice, int boxId,
