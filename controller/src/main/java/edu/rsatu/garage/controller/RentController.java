@@ -8,7 +8,10 @@ import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 import edu.rsatu.garage.exceptions.DateException;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,8 @@ public class RentController {
 
     private static Pattern DATE_PATTERN = Pattern.compile(
             "^\\d{2}.\\d{2}.\\d{4}$");
+
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public Long addCar(Client client, Model model, Box box, String carNumber,
                        LocalDate rentStartDate, LocalDate rentEndDate) {
@@ -84,6 +89,10 @@ public class RentController {
             return LocalDate.of(Integer.parseInt(date.substring(6)), Integer.parseInt(date.substring(3, 5)), Integer.parseInt(date.substring(0, 2)));
         }
         return null;
+    }
+
+    public static String getDateAsString(LocalDate date) {
+        return date.format(formatter);
     }
 
     public double calculatePrice(String startDate, String endDate) {

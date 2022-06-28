@@ -1,5 +1,7 @@
-package edu.rsatu.garage.controller;
+package edu.rsatu.garage;
 
+import edu.rsatu.garage.controller.RentController;
+import edu.rsatu.garage.entities.Client;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.TableWidthType;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
@@ -14,12 +16,15 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DocsController {
+public class DocsHelper {
 
-    public void generateReceipt() throws IOException {
+    public static void generateReceipt(long receiptNumber, String carNumber,
+                                       Client client, double sumPrice, int boxId,
+                                       LocalDate startDate, LocalDate endDate) throws IOException {
         XWPFDocument document = new XWPFDocument();
         XWPFParagraph requisites1 = document.createParagraph();
         requisites1.setAlignment(ParagraphAlignment.LEFT);
@@ -42,7 +47,7 @@ public class DocsController {
 
         XWPFParagraph title = document.createParagraph();
         title.setAlignment(ParagraphAlignment.CENTER);
-        String textData = "Квитанция №";
+        String textData = "Квитанция № " + receiptNumber;
         XWPFRun titleRun = title.createRun();
         titleRun.setFontFamily("Arial");
         titleRun.setFontSize(20);
@@ -59,9 +64,9 @@ public class DocsController {
 
         List<String> labels1 = List.of("Арендатор", "Адрес", "Государственный номер автомобиля");
         List<String> values1 = new ArrayList<>();
-        values1.add("Иванов");
-        values1.add("Адрес Иванова");
-        values1.add("н847ех76");
+        values1.add(client.getSurname());
+        values1.add(client.getAddress());
+        values1.add(carNumber);
         XWPFTable clientTable = document.createTable(labels1.size(), 2);
         clientTable.setWidthType(TableWidthType.PCT);
         clientTable.setWidth("100%");
@@ -147,21 +152,22 @@ public class DocsController {
         XWPFRun boxNumberValueRun = boxNumberValue.createRun();
         boxNumberValueRun.setFontSize(12);
         boxNumberValueRun.setFontFamily("Arial");
-        boxNumberValueRun.setText("1");
+        boxNumberValueRun.setText("" + boxId);
 
         XWPFParagraph rentPeriodValue = tableMain.getRow(2).getCell(1).addParagraph();
         rentPeriodValue.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun rentPeriodValueRun = rentPeriodValue.createRun();
         rentPeriodValueRun.setFontSize(12);
         rentPeriodValueRun.setFontFamily("Arial");
-        rentPeriodValueRun.setText("c 22.06.2022г. по 30.06.2022г.");
+        rentPeriodValueRun.setText("c " + RentController.getDateAsString(startDate) +
+                "г. по " + RentController.getDateAsString(endDate) + "г.");
 
         XWPFParagraph sumValue = tableMain.getRow(2).getCell(2).addParagraph();
         sumValue.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun sumValueRun = sumValue.createRun();
         sumValueRun.setFontSize(12);
         sumValueRun.setFontFamily("Arial");
-        sumValueRun.setText("2000");
+        sumValueRun.setText("" + sumPrice);
 
         XWPFParagraph finalSum = tableMain.getRow(3).getCell(0).addParagraph();
         finalSum.setAlignment(ParagraphAlignment.CENTER);
@@ -175,7 +181,7 @@ public class DocsController {
         XWPFRun finalSumValueRun = finalSumValue.createRun();
         finalSumValueRun.setFontSize(12);
         finalSumValueRun.setFontFamily("Arial");
-        finalSumValueRun.setText("2000");
+        finalSumValueRun.setText("" + sumPrice);
 
         XWPFParagraph blank2 = document.createParagraph();
         XWPFRun blank2Run = blank2.createRun();
@@ -225,7 +231,7 @@ public class DocsController {
         sealRun5.setFontFamily("Arial");
         sealRun5.setText("г.");
 
-        FileOutputStream out = new FileOutputStream("test.docx");
+        FileOutputStream out = new FileOutputStream("Квитанция.docx");
         document.write(out);
         out.close();
         document.close();

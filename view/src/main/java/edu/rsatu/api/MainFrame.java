@@ -1,5 +1,6 @@
 package edu.rsatu.api;
 
+import edu.rsatu.garage.DocsHelper;
 import edu.rsatu.garage.controller.AdministrationController;
 import edu.rsatu.garage.controller.InformationController;
 import edu.rsatu.garage.controller.RentController;
@@ -22,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -1831,12 +1833,17 @@ public class MainFrame extends JFrame {
                                 Long id = rentController.addClient(client);
                                 client.setId(id);
                             }
-                            rentController.addCar(client, rentController.getCurrentModel(),
+                            long receiptNumber = rentController.addCar(client, rentController.getCurrentModel(),
                                     rentController.getCurrentBox(), number, startRentDate, endRentDate);
+                            double sum = rentController.calculatePrice(rentController.getInterval(startRentDate, endRentDate));
+                            DocsHelper.generateReceipt(receiptNumber, number, client, sum, rentController.getCurrentBox().getId(),
+                                    startRentDate, endRentDate);
                             rentController = new RentController();
                             JOptionPane.showMessageDialog(null, "Аренда успешно оформлена");
                         } catch (DateException ex) {
                             JOptionPane.showMessageDialog(null, ex.getMessage());
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, "Не удалось сформировать квитанцию");
                         }
                     }
                 }

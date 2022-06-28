@@ -37,10 +37,10 @@ public class CarsDao implements Dao<Car, String>{
                 + "client_id) "
                 + "VALUES(?,?,?,?,?,?)";
 
-        //String[] generatedKeysColumns = {"rectnum"};
+        //String[] generatedKeysColumns = {"rectum"};
         return connection.flatMap(conn -> {
             Optional<Long> generatedReceiptNumber = Optional.empty();
-            try (PreparedStatement statement = conn.prepareStatement(sql, 4)) {
+            try (PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
                 statement.setString(1, nonNullCar.getNumber());
                 statement.setObject(2, nonNullCar.getRentStartDate());
@@ -55,7 +55,7 @@ public class CarsDao implements Dao<Car, String>{
                 if (numberOfInsertedRows > 0) {
                     try (ResultSet resultSet = statement.getGeneratedKeys()) {
                         if (resultSet.next()) {
-                            generatedReceiptNumber = Optional.of(resultSet.getLong(1));
+                            generatedReceiptNumber = Optional.of(resultSet.getLong("rectnum"));
                         }
                     }
                 }
