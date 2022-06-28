@@ -7,16 +7,15 @@ import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 import edu.rsatu.garage.exceptions.DateException;
+import org.apache.commons.validator.GenericValidator;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RentController {
@@ -32,10 +31,7 @@ public class RentController {
     private CarsDao carsDao = new CarsDao();
     private ClientsDao clientsDao = new ClientsDao();
 
-    private static Pattern DATE_PATTERN = Pattern.compile(
-            "^\\d{2}.\\d{2}.\\d{4}$");
-
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public Long addCar(Client client, Model model, Box box, String carNumber,
                        LocalDate rentStartDate, LocalDate rentEndDate) {
@@ -51,7 +47,7 @@ public class RentController {
     }
 
     public boolean checkDate(String date) {
-        return DATE_PATTERN.matcher(date).matches();
+        return GenericValidator.isDate(date, "dd.MM.yyyy", true);
     }
 
     public long getInterval(LocalDate start, LocalDate end) {
@@ -72,6 +68,7 @@ public class RentController {
     }
 
     public LocalDate getDateFromString(String date) {
+        date = date.trim();
         if (checkDate(date)) {
             return LocalDate.of(Integer.parseInt(date.substring(6)), Integer.parseInt(date.substring(3, 5)), Integer.parseInt(date.substring(0, 2)));
         }
@@ -79,7 +76,7 @@ public class RentController {
     }
 
     public static String getDateAsString(LocalDate date) {
-        return date.format(formatter);
+        return date.format(DATE_TIME_FORMATTER);
     }
 
     public double calculatePrice(String startDate, String endDate) {

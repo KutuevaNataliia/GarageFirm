@@ -154,7 +154,7 @@ public class RentCarPanel extends RentIssuesPanel {
             if (startText.getText() != null && startText.getText().length() == 10 &&
                     finishText.getText() != null && finishText.getText().length() == 10) {
                 try {
-                    double price = rentController.calculatePrice(startText.getText(), finishText.getText());
+                    double price = rentController.calculatePrice(startText.getText().trim(), finishText.getText().trim());
                     priceLabel.setText("Общая сумма: " + price);
                 } catch (DateException e) {
                     priceLabel.setText("Общая сумма:");
@@ -189,10 +189,10 @@ public class RentCarPanel extends RentIssuesPanel {
                 if (oldCar != null) {
                     JOptionPane.showMessageDialog(null, "Данный автомобиль уже находится в одном из боксов");
                 } else {
-                    LocalDate startRentDate = rentController.getDateFromString(startText.getText().trim());
-                    LocalDate endRentDate = rentController.getDateFromString(finishText.getText().trim());
+                    LocalDate startRentDate = rentController.getDateFromString(startText.getText());
+                    LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
                     if (startRentDate == null || endRentDate == null) {
-                        JOptionPane.showMessageDialog(null, "Неправильный формат даты, должно быть дд.мм.гггг");
+                        JOptionPane.showMessageDialog(null, "Неправильно указана дата");
                     } else {
                         try {
                             rentController.getInterval(startRentDate, endRentDate);

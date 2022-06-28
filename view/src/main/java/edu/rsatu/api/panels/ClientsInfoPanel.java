@@ -206,8 +206,6 @@ public class ClientsInfoPanel extends MainPanel {
         buttonsPanel.add(save);
 
         save.addActionListener(e ->{
-            rentController.checkDate(rentDate.getText());
-
             if(all.isSelected()){
                 //Все клиенты
                 parent.setMainPanel(getClientsInfoResults(1,"-","-","-" ));
@@ -217,7 +215,7 @@ public class ClientsInfoPanel extends MainPanel {
             }else if(forAuto.isSelected()){
 
                 if(rentTill.isSelected()){
-                    if(rentController.checkDate(rentDate.getText())){
+                    if(rentController.checkDate(rentDate.getText().trim())){
                         //Клиенты владеющие автомобилем марки, аренда которых кончается <date>
                         parent.setMainPanel(getClientsInfoResults(5,"-",models.getSelectedItem().toString(),rentDate.getText()));
                     }
@@ -230,7 +228,7 @@ public class ClientsInfoPanel extends MainPanel {
                 }
             }else if(rentTill.isSelected()){
 
-                if(rentController.checkDate(rentDate.getText())){
+                if(rentController.checkDate(rentDate.getText().trim())){
                     //Клиенты аренда которых кончается <date>
                     parent.setMainPanel(getClientsInfoResults(4,"-","-",rentDate.getText() ));
                 }
