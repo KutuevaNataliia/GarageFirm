@@ -41,6 +41,8 @@ public class MainFrame extends JFrame {
     AdministrationController administrationController = new AdministrationController();
     InformationController informationController = new InformationController();
 
+    RentController rentController = new RentController();
+
     ModelsDao modelsDao = new ModelsDao();
 
     public MainFrame() {
@@ -1647,7 +1649,7 @@ public class MainFrame extends JFrame {
         for (Box box : boxesG) {
             boxes.addItem(box.getId().toString());
         }
-        //надо бы делать невидимым по хорошему, но как?
+
         boxes.setEnabled(false);
 
         JPanel forBoxPanel = new JPanel(new GridLayout(1, 2, 10, 20));
@@ -1794,7 +1796,6 @@ public class MainFrame extends JFrame {
     }
 
 
-
     private JPanel getClientsInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
 
@@ -1809,7 +1810,7 @@ public class MainFrame extends JFrame {
         cc.anchor = GridBagConstraints.PAGE_START;
         mainPanel.add(caption, cc);
 
-        JCheckBox all = new JCheckBox("Все");
+        JCheckBox all = new JCheckBox("Все клиенты");
         GridBagConstraints alc = new GridBagConstraints();
         alc.weightx = 1;
         alc.weighty = 1;
@@ -1818,7 +1819,7 @@ public class MainFrame extends JFrame {
         alc.anchor = GridBagConstraints.NORTHWEST;
         mainPanel.add(all, alc);
 
-        JCheckBox forBox = new JCheckBox("Занимающий бокс");
+        JCheckBox forBox = new JCheckBox("Клиент занимающий бокс:");
         GridBagConstraints fbc = new GridBagConstraints();
         fbc.weightx = 1;
         fbc.weighty = 1;
@@ -1828,6 +1829,7 @@ public class MainFrame extends JFrame {
         fbc.anchor = GridBagConstraints.PAGE_START;
         mainPanel.add(forBox, fbc);
 
+        //список боксов
         DefaultComboBoxModel<String> boxesModel = new DefaultComboBoxModel<>();
         JComboBox<String> boxes = new JComboBox<>(boxesModel);
         GridBagConstraints bc = new GridBagConstraints();
@@ -1839,7 +1841,12 @@ public class MainFrame extends JFrame {
         bc.anchor = GridBagConstraints.NORTHWEST;
         mainPanel.add(boxes, bc);
 
-        JCheckBox forAuto = new JCheckBox("Владеющие автомобилем марки");
+        List<Box> boxesG = informationController.getAllBoxes();
+        for (Box box : boxesG) {
+            boxes.addItem(box.getId().toString());
+        }
+
+        JCheckBox forAuto = new JCheckBox("Клиенты, владеющие автомобилем марки:");
         GridBagConstraints fac = new GridBagConstraints();
         fac.weightx = 1;
         fac.weighty = 1;
@@ -1849,7 +1856,7 @@ public class MainFrame extends JFrame {
         fac.anchor = GridBagConstraints.NORTH;
         mainPanel.add(forAuto, fac);
 
-        JCheckBox rentTill = new JCheckBox("Аренда до");
+        JCheckBox rentTill = new JCheckBox("Клиенты, аренда которых кончается:");
         GridBagConstraints rtc = new GridBagConstraints();
         rtc.weightx = 1;
         rtc.weighty = 1;
@@ -1859,34 +1866,8 @@ public class MainFrame extends JFrame {
         rtc.anchor = GridBagConstraints.PAGE_START;
         mainPanel.add(rentTill, rtc);
 
-        all.setSelected(true);
-        all.addActionListener(e -> {
-            if (all.isSelected()) {
-                forBox.setSelected(false);
-                forAuto.setSelected(false);
-                rentTill.setSelected(false);
-            }
-        });
-        forBox.addActionListener(e -> {
-            if (forBox.isSelected()) {
-                all.setSelected(false);
-                forAuto.setSelected(false);
-                rentTill.setSelected(false);
-            }
-        });
-        forAuto.addActionListener(e -> {
-            if (forAuto.isSelected()) {
-                all.setSelected(false);
-                forBox.setSelected(false);
-            }
-        });
-        rentTill.addActionListener(e -> {
-            if (rentTill.isSelected()) {
-                all.setSelected(false);
-                forBox.setSelected(false);
-            }
-        });
 
+        //список моделей
         DefaultComboBoxModel<String> modelsModel = new DefaultComboBoxModel<>();
         JComboBox<String> models = new JComboBox<>(modelsModel);
         GridBagConstraints mc = new GridBagConstraints();
@@ -1898,6 +1879,12 @@ public class MainFrame extends JFrame {
         mc.anchor = GridBagConstraints.NORTHWEST;
         mainPanel.add(models, mc);
 
+        List<Model> modelsG = informationController.getAllModels();
+        for (Model model : modelsG) {
+            models.addItem(model.getName());
+        }
+
+        //строка для даты
         JTextField rentDate = new JTextField();
         GridBagConstraints rdc = new GridBagConstraints();
         rdc.weightx = 1;
@@ -1907,6 +1894,69 @@ public class MainFrame extends JFrame {
         rdc.fill = GridBagConstraints.HORIZONTAL;
         rdc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(rentDate, rdc);
+
+        boxes.setEnabled(false);
+        models.setEnabled(false);
+        rentDate.setEnabled(false);
+
+        all.setSelected(true);
+        all.addActionListener(e -> {
+            if (all.isSelected()) {
+                forBox.setSelected(false);
+                forAuto.setSelected(false);
+                rentTill.setSelected(false);
+                //список боксов выключается
+                //список марок выключается
+                //строка для даты выключается
+                boxes.setEnabled(false);
+                models.setEnabled(false);
+                rentDate.setEnabled(false);
+            }
+        });
+        forBox.addActionListener(e -> {
+            if (forBox.isSelected()) {
+                all.setSelected(false);
+                forAuto.setSelected(false);
+                rentTill.setSelected(false);
+                //список боксов включается
+                //список марок выключается
+                //строка для даты выключается
+                boxes.setEnabled(true);
+                models.setEnabled(false);
+                rentDate.setEnabled(false);
+
+            }
+            else{
+                //список боксов выключается
+                boxes.setEnabled(false);
+            }
+        });
+        forAuto.addActionListener(e -> {
+            if (forAuto.isSelected()) {
+                all.setSelected(false);
+                forBox.setSelected(false);
+                //список марок включается
+                //список боксов выключается
+                models.setEnabled(true);
+                boxes.setEnabled(false);
+            }else{
+                //список марок выключается
+                models.setEnabled(false);
+            }
+        });
+        rentTill.addActionListener(e -> {
+            if (rentTill.isSelected()) {
+                all.setSelected(false);
+                forBox.setSelected(false);
+                //строка для даты включается
+                //список боксов выключается
+                rentDate.setEnabled(true);
+                boxes.setEnabled(false);
+            }else{
+                //строка для даты выключается
+                rentDate.setEnabled(false);
+            }
+        });
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -1921,13 +1971,154 @@ public class MainFrame extends JFrame {
 
         JButton save = new JButton("Получить справку");
         buttonsPanel.add(save);
-        JButton cancel = new JButton("Отмена");
-        buttonsPanel.add(cancel);
 
+        save.addActionListener(e ->{
+            rentController.checkDate(rentDate.getText());
+
+            if(all.isSelected()){
+                //Все клиенты
+                setMainPanel(ClientsInfo(1,"-","-","-" ));
+            }else if(forBox.isSelected()){
+                //Клиент занимающий бокс
+                setMainPanel(ClientsInfo(2,boxes.getSelectedItem().toString(),"-","-" ));
+            }else if(forAuto.isSelected()){
+
+                if(rentTill.isSelected()){
+                    if(rentController.checkDate(rentDate.getText())){
+                        //Клиенты владеющие автомобилем марки, аренда которых кончается <date>
+                        setMainPanel(ClientsInfo(5,"-",models.getSelectedItem().toString(),rentDate.getText()));
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Некорректно введена дата");
+                    }
+                }else{
+                    //Клиенты владеющие автомобилем марки
+                    setMainPanel(ClientsInfo(3,"-",models.getSelectedItem().toString(),"-" ));
+                }
+            }else if(rentTill.isSelected()){
+
+                if(rentController.checkDate(rentDate.getText())){
+                    //Клиенты аренда которых кончается <date>
+                    setMainPanel(ClientsInfo(4,"-","-",rentDate.getText() ));
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Некорректно введена дата");
+                }
+            }
+
+        });
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
     }
+
+    //панель информации по клиентам
+    private JPanel ClientsInfo(int r,String boxID, String modelName, String rentDate) {
+
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        String text = "";
+        String text1 = "Все клиенты";
+        String text2 = "Клиент занимающий бокс №" + boxID;
+        String text3 = "Клиенты, владеющие автомобилем марки " + modelName;
+        String text4 = "Клиенты, аренда которых кончается " + rentDate;
+        String text5 = "Клиенты, владеющие автомобилем марки " + modelName + ", аренда которых кончается " + rentDate;
+
+
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 2;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+
+
+        JLabel chooseBox = new JLabel(text, SwingConstants.CENTER);
+        mainPanel.add(chooseBox);
+        GridBagConstraints cbc = new GridBagConstraints();
+        cbc.weightx = 1;
+        cbc.weighty = 1;
+        cbc.gridx = 0;
+        cbc.gridy = 1;
+        cbc.fill = GridBagConstraints.HORIZONTAL;
+        mainPanel.add(chooseBox, cbc);
+
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JList<String> clients = new JList<>(listModel);
+        GridBagConstraints bc = new GridBagConstraints();
+        bc.weightx = 0.6;
+        bc.weighty = 5;
+        bc.gridx = 0;
+        bc.gridy = 2;
+        bc.fill = GridBagConstraints.CENTER;
+        bc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(clients, bc);
+
+        List<Client> clientsX = new ArrayList<>();
+
+
+
+        if (r == 1) {
+            chooseBox.setText(text1);
+            clientsX = informationController.getAllClients();
+        } else if (r == 2) {
+            chooseBox.setText(text2);
+            Integer id = -1;
+            try {
+                id = Integer.parseInt(boxID.trim());
+            } catch (NumberFormatException nfe) {
+            }
+            Box box = informationController.getBoxByNumber(id);
+            Client client = informationController.getClientForBox(box);
+            if(client != null) clientsX = List.of(client);
+
+        } else if (r == 3) {
+            chooseBox.setText(text3);
+            Model model = informationController.getModelByName(modelName);
+            if(model!=null)
+            clientsX = informationController.getClientsForModel(model);
+        } else if (r == 4) {
+            chooseBox.setText(text4);
+            clientsX = informationController.getClientsForDate(rentController.getDateFromString(rentDate));
+        }else if (r == 5){
+            chooseBox.setText(text5);
+            Model model = informationController.getModelByName(modelName);
+            if(model!=null)
+            clientsX = informationController.getClientsForModelDate(model,
+                    rentController.getDateFromString(rentDate));
+        }
+
+        if (clientsX.size() == 0) {
+            listModel.add(listModel.getSize(), "-");
+        }
+
+
+        for (Client client : clientsX) {
+
+            listModel.add(listModel.getSize(), client.getSurname() + "     адрес: " + client.getAddress());
+        }
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 3;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton cancel = new JButton("Назад");
+        buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> setMainPanel(getClientsInfoPanel()));
+
+        JButton getDoc = new JButton("Получить спраку в формате docx");
+        buttonsPanel.add(getDoc);
+
+        return mainPanel;
+    }
+
 
     private class AddCarListener implements ActionListener {
         private RentController rentController;

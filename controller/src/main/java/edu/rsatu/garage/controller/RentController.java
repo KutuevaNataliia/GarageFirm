@@ -43,28 +43,6 @@ public class RentController {
         return carsDao.save(car).orElse(null);
     }
 
-    /*
-    public static boolean checkNumber(String carNumber){
-        boolean result = true;
-
-        if(carNumber.length()<8) return false;
-        if(carNumber.length()>9) return false;
-
-        char[] symbols = carNumber.toCharArray();
-        if(!Character.isLetter(symbols[0])) return false;
-        for(int i = 1; i <= 3;i++){
-            if(!Character.isDigit(symbols[i])) return false;
-        }
-        if(!Character.isLetter(symbols[4])) return false;
-        if(!Character.isLetter(symbols[5])) return false;
-        for(int i = 6; i < symbols.length;i++){
-            if(!Character.isDigit(symbols[i])) return false;
-        }
-
-        return true;
-    }
-    */
-
     public static boolean checkNumber2(String carNumber){
         //российский лёгкий автомобиль
         //ГОСТ Р 50577-2018
@@ -117,11 +95,6 @@ public class RentController {
     public double calculatePrice(long days) {
         return currentBox.getRentPrice() * days;
     }
-
-
-
-
-
 
     public Car getCar(String carNumber) {
         return carsDao.get(carNumber).orElse(null);
