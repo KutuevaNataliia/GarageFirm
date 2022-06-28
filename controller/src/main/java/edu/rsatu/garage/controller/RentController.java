@@ -43,6 +43,7 @@ public class RentController {
         return carsDao.save(car).orElse(null);
     }
 
+    /*
     public static boolean checkNumber(String carNumber){
         boolean result = true;
 
@@ -61,6 +62,14 @@ public class RentController {
         }
 
         return true;
+    }
+    */
+
+    public static boolean checkNumber2(String carNumber){
+        //российский лёгкий автомобиль
+        //ГОСТ Р 50577-2018
+        String pattern="^[АВЕКМНОРСТУХ]\\d{3}[АВЕКМНОРСТУХ]{2}\\d{2,3}";
+        return(carNumber.matches(pattern));
     }
 
     public boolean checkDate(String date) {
@@ -109,14 +118,9 @@ public class RentController {
         return currentBox.getRentPrice() * days;
     }
 
-    /*что делать с этим выражением дальше ?
-    public boolean checkNumber2(String carNumber){
-        boolean result = true;
-        String pattern="/^[АВЕКМНОРСТУХ]\d{3}(?<!000)[АВЕКМНОРСТУХ]{2}\d{2,3}$/ui";
-        Pattern r = Pattern.compile(pattern);
-        return true;
-    }
-    */
+
+
+
 
 
     public Car getCar(String carNumber) {

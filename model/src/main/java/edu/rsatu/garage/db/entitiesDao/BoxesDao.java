@@ -75,7 +75,7 @@ public class BoxesDao implements Dao<Box, Integer> {
 
     public List<Box> getAll() {
         List<Box> boxes = new ArrayList<>();
-        String sql = "SELECT * FROM box";
+        String sql = "SELECT * FROM box ORDER BY boxnum";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
@@ -184,7 +184,7 @@ public class BoxesDao implements Dao<Box, Integer> {
     public List<Box> getFreeBoxes() {
         List<Box> boxes = new ArrayList<>();
         String sql = "SELECT * FROM box WHERE NOT EXISTS " +
-        "(SELECT car.boxNum FROM car WHERE car.boxNum = box.boxNum)";
+        "(SELECT car.boxNum FROM car WHERE car.boxNum = box.boxNum) ORDER BY boxnum";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {

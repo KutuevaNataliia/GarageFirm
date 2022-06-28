@@ -23,29 +23,20 @@ public class InformationController {
     private CarsDao carsDao = new CarsDao();
 
     public List<Box> getAllBoxes() {
-        List<Box> boxes = boxesDao.getAll();
-        Collections.sort(boxes);
-        return boxes;
+        return  boxesDao.getAll();
     }
 
     public List<Box> getFreeBoxes() {
-        List<Box> boxes = boxesDao.getFreeBoxes();
-        Collections.sort(boxes);
-        return boxes;
+        return boxesDao.getFreeBoxes();
 
     }
 
     public List<Box> getBoxesForModel(Model model) {
-        List<Box> boxes = boxesModelsDao.getBoxesForModel(model);
-        Collections.sort(boxes);
-        return boxes;
+        return boxesModelsDao.getBoxesForModel(model);
     }
 
     public List<Box> getFreeBoxesForModel(Model model) {
-        List<Box> boxes = boxesModelsDao.getBoxesForModel(model);
-        Collections.sort(boxes);
         return boxesModelsDao.getFreeBoxesForModel(model);
-
     }
 
     public Car getCarByNumber(String number) {
@@ -65,9 +56,8 @@ public class InformationController {
     }
 
     public List<Model> getAllModels() {
-        List<Model> models = modelsDao.getAll();
-        Collections.sort(models);
-        return models;
+
+        return modelsDao.getAll();
     }
 
     public Model getModelByName(String name){

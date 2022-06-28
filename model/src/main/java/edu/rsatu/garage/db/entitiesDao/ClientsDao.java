@@ -53,7 +53,7 @@ public class ClientsDao implements Dao<Client, Long> {
     @Override
     public List<Client> getAll() {
         List<Client> clients = new ArrayList<>();
-        String sql = "SELECT * FROM client";
+        String sql = "SELECT * FROM client ORDER BY id";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {
@@ -196,7 +196,7 @@ public class ClientsDao implements Dao<Client, Long> {
         Model nonNullModel = Objects.requireNonNull(model, message);
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE id IN" +
-                "(SELECT client_id FROM car WHERE model_id = ?)";
+                "(SELECT client_id FROM car WHERE model_id = ?) ORDER BY id";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -228,7 +228,7 @@ public class ClientsDao implements Dao<Client, Long> {
         LocalDate nonNullDate = Objects.requireNonNull(rentEndDate, message);
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE id IN " +
-                "(SELECT client_id FROM car WHERE rental_end_date <= ?)";
+                "(SELECT client_id FROM car WHERE rental_end_date <= ?) ORDER BY id";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -263,7 +263,7 @@ public class ClientsDao implements Dao<Client, Long> {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM client WHERE id IN " +
                 "(SELECT client_id FROM car WHERE model_id = ?)" +
-                "AND id IN (SELECT client_id FROM car WHERE rental_end_date <= ?) ";
+                "AND id IN (SELECT client_id FROM car WHERE rental_end_date <= ?) ORDER BY id";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
