@@ -1789,6 +1789,7 @@ public class MainFrame extends JFrame {
 
         JButton getDoc = new JButton("Получить спраку в формате docx");
         buttonsPanel.add(getDoc);
+        getDoc.addActionListener(new ModelNotesListener(modelsX, text));
 
         return mainPanel;
     }
@@ -1927,6 +1928,26 @@ public class MainFrame extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
+    }
+
+    private class ModelNotesListener implements ActionListener {
+        private List<Model> models;
+        private String title;
+
+        public ModelNotesListener(List<Model> models, String title) {
+            this.models = models;
+            this.title = title;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            List<List<String>> records = models.stream().map(m -> List.of(m.getName())).collect(Collectors.toList());
+            try {
+                DocsHelper.generateNote(title, records, "Справка_марки.docx");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private class AddCarListener implements ActionListener {

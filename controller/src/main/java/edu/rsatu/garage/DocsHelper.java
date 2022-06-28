@@ -231,9 +231,66 @@ public class DocsHelper {
         sealRun5.setFontFamily("Arial");
         sealRun5.setText("г.");
 
-        FileOutputStream out = new FileOutputStream("Квитанция.docx");
+        String filename = "Квитанция_"+ receiptNumber +".docx";
+        FileOutputStream out = new FileOutputStream(filename);
         document.write(out);
         out.close();
         document.close();
     }
+
+    public static void generateNote(String title, List<List<String>> records, String filename) throws IOException {
+        XWPFDocument document = new XWPFDocument();
+        XWPFParagraph caption = document.createParagraph();
+        caption.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun captionRun = caption.createRun();
+        captionRun.setFontFamily("Arial");
+        captionRun.setFontSize(16);
+        captionRun.setBold(true);
+        captionRun.setText(title);
+
+        if (records == null || records.isEmpty()) {
+            XWPFParagraph message = document.createParagraph();
+            message.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun messageRun = message.createRun();
+            messageRun.setFontFamily("Arial");
+            messageRun.setFontSize(16);
+            messageRun.setBold(true);
+            messageRun.setText("Отсутствуют");
+            FileOutputStream out = new FileOutputStream(filename);
+            document.write(out);
+            out.close();
+            document.close();
+            return;
+        }
+        XWPFTable table = document.createTable(records.size(), records.get(0).size() + 1);
+        table.setWidthType(TableWidthType.PCT);
+        table.setWidth("100%");
+        for (int i = 0; i < records.size(); i++) {
+            XWPFTableCell number = table.getRow(i).getCell(0);
+            number.setWidthType(TableWidthType.AUTO);
+            XWPFParagraph numberValue = number.addParagraph();
+            numberValue.setAlignment(ParagraphAlignment.CENTER);
+            XWPFRun numberValueRun = numberValue.createRun();
+            numberValueRun.setFontFamily("Arial");
+            numberValueRun.setFontSize(12);
+            numberValueRun.setText("" + (i + 1));
+            for (int j = 0; j < records.get(0).size(); j++) {
+                XWPFTableCell cell = table.getRow(i).getCell(j + 1);
+                XWPFParagraph value = cell.addParagraph();
+                value.setAlignment(ParagraphAlignment.LEFT);
+                XWPFRun valueRun = value.createRun();
+                valueRun.setFontFamily("Arial");
+                valueRun.setFontSize(12);
+                valueRun.setText(records.get(i).get(j));
+            }
+        }
+
+        FileOutputStream out = new FileOutputStream(filename);
+        document.write(out);
+        out.close();
+        document.close();
+    }
+
+
+
 }
