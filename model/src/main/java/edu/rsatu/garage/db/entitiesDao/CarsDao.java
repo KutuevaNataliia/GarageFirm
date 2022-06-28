@@ -190,7 +190,7 @@ public class CarsDao implements Dao<Car, String>{
 
     public List<Car> getCarsForClientId(Long clientId) {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT * FROM car WHERE client_id = ?";
+        String sql = "SELECT * FROM car WHERE client_id = ? ";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -244,7 +244,7 @@ public class CarsDao implements Dao<Car, String>{
 
     public List<Car> getCarsForModelId(Long modelId) {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT * FROM car WHERE model_id = ?";
+        String sql = "SELECT * FROM car WHERE model_id = ? ";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
 

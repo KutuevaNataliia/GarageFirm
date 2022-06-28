@@ -49,7 +49,7 @@ public class ModelsDao implements Dao<Model, Long>{
     @Override
     public List<Model> getAll() {
         List<Model> models = new ArrayList<>();
-        String sql = "SELECT * FROM model";
+        String sql = "SELECT * FROM model ORDER BY id";
         connection.ifPresent(conn -> {
             try (Statement statement = conn.createStatement();
                  ResultSet resultSet = statement.executeQuery(sql)) {

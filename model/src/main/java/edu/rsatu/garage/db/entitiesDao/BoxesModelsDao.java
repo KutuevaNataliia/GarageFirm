@@ -64,7 +64,7 @@ public class BoxesModelsDao {
         String message = "The model should not be null";
         Model nonNullModel = Objects.requireNonNull(model, message);
         String sql = "SELECT * FROM box WHERE boxnum IN " +
-                "(SELECT box_num FROM fit WHERE model_id = ?) ";
+                "(SELECT box_num FROM fit WHERE model_id = ?) ORDER BY boxnum";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setLong(1, nonNullModel.getId());
@@ -93,7 +93,7 @@ public class BoxesModelsDao {
         Model nonNullModel = Objects.requireNonNull(model, message);
         String sql = "SELECT * FROM box WHERE boxnum IN " +
                 "(SELECT box_num FROM fit WHERE model_id = ?) " +
-                "AND NOT EXISTS (SELECT car.boxnum FROM car WHERE car.boxnum = box.boxnum)";
+                "AND NOT EXISTS (SELECT car.boxnum FROM car WHERE car.boxnum = box.boxnum) ORDER BY boxnum";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setLong(1, nonNullModel.getId());
@@ -121,7 +121,7 @@ public class BoxesModelsDao {
         String message = "The box should not be null";
         Box nonNullBox = Objects.requireNonNull(box, message);
         String sql = "SELECT * FROM model WHERE id in " +
-                "(SELECT model_id FROM fit WHERE box_num = ?)";
+                "(SELECT model_id FROM fit WHERE box_num = ?) ORDER BY id";
         connection.ifPresent(conn -> {
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
                 statement.setInt(1, nonNullBox.getId());

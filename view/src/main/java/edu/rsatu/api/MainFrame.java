@@ -1282,7 +1282,7 @@ public class MainFrame extends JFrame {
 
         findAuto.addActionListener(e -> {
             String number = autoNumber.getText();
-            if (RentController.checkNumber(number)) {
+            if (RentController.checkNumber2(number)) {
                 Car car = informationController.getCarByNumber(number);
                 rentController.setCurrentCar(car);
                 Client client = informationController.getClientById(car.getClientId());
@@ -1592,6 +1592,10 @@ public class MainFrame extends JFrame {
         JButton cancel = new JButton("Назад");
         buttonsPanel.add(cancel);
         cancel.addActionListener(e -> setMainPanel(getBoxesInfoPanel()));
+
+        JButton getDoc = new JButton("Получить спраку в формате docx");
+        buttonsPanel.add(getDoc);
+
         return mainPanel;
     }
 
@@ -1619,14 +1623,12 @@ public class MainFrame extends JFrame {
         opc.anchor = GridBagConstraints.NORTH;
         mainPanel.add(optionPanel, opc);
 
-        ButtonGroup options = new ButtonGroup();
-        JRadioButton all = new JRadioButton("Все");
+
+        JCheckBox all = new JCheckBox("Все марки");
         all.setSelected(true);
-        JRadioButton forBox = new JRadioButton("Могут быть помещены в бокс");
-        options.add(all);
-        options.add(forBox);
+
         optionPanel.add(all);
-        optionPanel.add(forBox);
+
 
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         JComboBox<String> boxes = new JComboBox<>(comboBoxModel);
@@ -1638,6 +1640,41 @@ public class MainFrame extends JFrame {
         bc.fill = GridBagConstraints.CENTER;
         bc.anchor = GridBagConstraints.NORTHWEST;
         mainPanel.add(boxes, bc);
+
+        List<Box> boxesG = informationController.getAllBoxes();
+        for (Box box : boxesG) {
+            boxes.addItem(box.getId().toString());
+        }
+        //надо бы делать невидимым по хорошему, но как?
+        boxes.setEnabled(false);
+
+        JPanel forBoxPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        JCheckBox forBox = new JCheckBox("Марки, которые могут быть помещены в бокс:");
+        forBoxPanel.add(forBox);
+        forBoxPanel.add(boxes);
+
+        GridBagConstraints uc = new GridBagConstraints();
+        uc.weightx = 1;
+        uc.weighty = 5;
+        uc.gridx = 0;
+        uc.gridy = 2;
+        uc.fill = GridBagConstraints.HORIZONTAL;
+        uc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(forBoxPanel, uc);
+
+        all.addActionListener(e ->{
+            if(all.isSelected()){
+                forBox.setSelected(false);
+                boxes.setEnabled(false);
+            }
+        });
+
+        forBox.addActionListener(e ->{
+            if(forBox.isSelected()){
+                all.setSelected(false);
+                boxes.setEnabled(true);
+            }
+        });
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
         GridBagConstraints bpc = new GridBagConstraints();
@@ -1651,14 +1688,110 @@ public class MainFrame extends JFrame {
 
         JButton save = new JButton("Получить справку");
         buttonsPanel.add(save);
-
-        JButton cancel = new JButton("Отмена");
-        buttonsPanel.add(cancel);
+        save.addActionListener(e -> {
+            if (all.isSelected() || forBox.isSelected())  {
+                if (forBox.isSelected()) {
+                    setMainPanel(ModelsInfo(all.isSelected(), forBox.isSelected(), boxes.getSelectedItem().toString()));
+                } else {
+                    setMainPanel(ModelsInfo(all.isSelected(), forBox.isSelected(), "-"));
+                }
+            }
+        });
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
     }
+
+    //панель информации по маркам
+    private JPanel ModelsInfo(boolean all, boolean forBox, String boxID) {
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+
+        String text = "";
+        String text1 = "Все марки";
+        String text2 = "Марки, которые могут быть помещены в бокс №"+ boxID;
+
+        GridBagConstraints cc = new GridBagConstraints();
+        cc.weightx = 1;
+        cc.weighty = 2;
+        cc.gridx = 0;
+        cc.gridy = 0;
+        cc.fill = GridBagConstraints.HORIZONTAL;
+        cc.anchor = GridBagConstraints.PAGE_START;
+        int r = 0;
+
+        if (all) {
+            text = text1;
+            r = 1;
+        } else {
+            text = text2;
+            r = 2;
+        }
+
+        JLabel chooseBox = new JLabel(text, SwingConstants.CENTER);
+        mainPanel.add(chooseBox);
+        GridBagConstraints cbc = new GridBagConstraints();
+        cbc.weightx = 1;
+        cbc.weighty = 1;
+        cbc.gridx = 0;
+        cbc.gridy = 1;
+        cbc.fill = GridBagConstraints.HORIZONTAL;
+        mainPanel.add(chooseBox, cbc);
+
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        JList<String> boxes = new JList<>(listModel);
+        GridBagConstraints bc = new GridBagConstraints();
+        bc.weightx = 0.6;
+        bc.weighty = 5;
+        bc.gridx = 0;
+        bc.gridy = 2;
+        bc.fill = GridBagConstraints.CENTER;
+        bc.anchor = GridBagConstraints.NORTH;
+        mainPanel.add(boxes, bc);
+
+        Integer id = -1;
+        try {
+            id = Integer.parseInt(boxID.trim());
+        } catch (NumberFormatException nfe) {
+        }
+
+        List<Model> modelsX = new ArrayList<>();
+
+        if (r == 1) {
+            modelsX = informationController.getAllModels();
+        } else {
+            modelsX = informationController.getModelsForBox(informationController.getBoxByNumber(id));
+        }
+        if (modelsX.size() == 0) {
+            listModel.add(listModel.getSize(), "отсутствуют");
+        }
+
+        for (Model model : modelsX) {
+
+            listModel.add(listModel.getSize(), model.getName());
+        }
+
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
+        GridBagConstraints bpc = new GridBagConstraints();
+        bpc.weightx = 1;
+        bpc.weighty = 1;
+        bpc.gridx = 0;
+        bpc.gridy = 3;
+        bpc.fill = GridBagConstraints.HORIZONTAL;
+        bpc.anchor = GridBagConstraints.SOUTH;
+        mainPanel.add(buttonsPanel, bpc);
+
+        JButton cancel = new JButton("Назад");
+        buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> setMainPanel(getModelsInfoPanel()));
+
+        JButton getDoc = new JButton("Получить спраку в формате docx");
+        buttonsPanel.add(getDoc);
+
+        return mainPanel;
+    }
+
+
 
     private JPanel getClientsInfoPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -1810,7 +1943,7 @@ public class MainFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String number = autoText.getText().trim();
-            if (!RentController.checkNumber(number)) {
+            if (!RentController.checkNumber2(number)) {
                 JOptionPane.showMessageDialog(null, "Неправильный формат номера автомобиля");
             } else {
                 Car oldCar = informationController.getCarByNumber(number);
