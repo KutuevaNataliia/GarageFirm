@@ -8,6 +8,7 @@ import edu.rsatu.api.panels.administration.DeleteModelPanel;
 import edu.rsatu.api.panels.info.ModelsInfoPanel;
 import edu.rsatu.api.panels.administration.NewBoxPanel;
 import edu.rsatu.api.panels.administration.NewModelPanel;
+import edu.rsatu.api.panels.info.StatisticPanel;
 import edu.rsatu.api.panels.rent.RentClosePanel;
 import edu.rsatu.api.panels.rent.RentCommonPanel;
 
@@ -82,6 +83,9 @@ public class MainFrame extends JFrame {
         JMenuItem models = new JMenuItem("Марки");
         selection.add(models);
         models.addActionListener(e -> setMainPanel(new ModelsInfoPanel(this)));
+        JMenuItem statistics = new JMenuItem("Статистика");
+        selection.add(statistics);
+        statistics.addActionListener(e -> setMainPanel(new StatisticPanel(this)));
 
         JMenu exit = new JMenu("Выход");
         menuBar.add(exit);

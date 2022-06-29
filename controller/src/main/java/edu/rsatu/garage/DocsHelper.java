@@ -2,6 +2,8 @@ package edu.rsatu.garage;
 
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Client;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.TableWidthType;
 import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
@@ -16,6 +18,9 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -294,6 +299,37 @@ public class DocsHelper {
         document.close();
     }
 
+    public static void generateStatisticsNote(String filename, String chartFileName, double averageInterval) throws IOException, InvalidFormatException {
+        XWPFDocument document = new XWPFDocument();
+        XWPFParagraph caption = document.createParagraph();
+        caption.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun captionRun = caption.createRun();
+        captionRun.setFontFamily("Arial");
+        captionRun.setFontSize(16);
+        captionRun.setBold(true);
+        captionRun.setText("Статистика по срокам аренды");
 
+        XWPFParagraph average = document.createParagraph();
+        average.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun averageRun = average.createRun();
+        averageRun.setFontFamily("Arial");
+        averageRun.setFontSize(12);
+        averageRun.setBold(true);
+        averageRun.addBreak();
+        averageRun.setText("Средняя продолжительность аренды: " + averageInterval + " дней");
+
+        XWPFParagraph chart = document.createParagraph();
+        chart.setAlignment(ParagraphAlignment.CENTER);
+        XWPFRun chartRun = chart.createRun();
+        Path imagePath = Paths.get(chartFileName);
+        chartRun.addPicture(Files.newInputStream(imagePath),
+                XWPFDocument.PICTURE_TYPE_PNG, imagePath.getFileName().toString(),
+                Units.toEMU(450), Units.toEMU(400));
+
+        FileOutputStream out = new FileOutputStream(filename);
+        document.write(out);
+        out.close();
+        document.close();
+    }
 
 }

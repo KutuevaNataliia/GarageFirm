@@ -1,5 +1,6 @@
 package edu.rsatu.garage.controller;
 
+import edu.rsatu.garage.db.Pair;
 import edu.rsatu.garage.db.entitiesDao.BoxesDao;
 import edu.rsatu.garage.db.entitiesDao.BoxesModelsDao;
 import edu.rsatu.garage.db.entitiesDao.CarsDao;
@@ -113,4 +114,13 @@ public class InformationController {
     public List<Car> getCarsForModel(Model model) {
         return carsDao.getCarsForModelId(model.getId());
     }
+
+    public List<Pair<Integer>> getIntervalsStatistic() {
+        return carsDao.getRentIntervalsStatistic();
+    }
+
+    public double getAverageRentInterval() {
+        return carsDao.getAverageRentInterval();
+    }
+
 }

@@ -2,8 +2,8 @@ package edu.rsatu.garage.db.entitiesDao;
 
 import edu.rsatu.garage.db.Dao;
 import edu.rsatu.garage.db.JdbcConnection;
+import edu.rsatu.garage.db.Pair;
 import edu.rsatu.garage.entities.Car;
-import edu.rsatu.garage.entities.Client;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -267,5 +268,39 @@ public class CarsDao implements Dao<Car, String>{
             }
         });
         return cars;
+    }
+
+    public List<Pair<Integer>> getRentIntervalsStatistic() {
+        List<Pair<Integer>> pairs = new ArrayList<>();
+        String sql = "select rental_end_date - rental_start_date as i, count(carNum) from car group by i order by i";
+        connection.ifPresent(conn -> {
+            try (Statement statement = conn.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    int  interval = resultSet.getInt(1);
+                    int count = resultSet.getInt(2);
+                    pairs.add(new Pair<>(interval, count));
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return pairs;
+    }
+
+    public double getAverageRentInterval() {
+        AtomicReference<Double> result = new AtomicReference<>((double) 0);
+        String sql = "select AVG(rental_end_date - rental_start_date) from car";
+        connection.ifPresent(conn -> {
+            try (Statement statement = conn.createStatement();
+                 ResultSet resultSet = statement.executeQuery(sql)) {
+                if (resultSet.next()) {
+                    result.set(resultSet.getDouble(1));
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+        });
+        return result.get();
     }
 }
