@@ -157,17 +157,10 @@ public class BoxesDao implements Dao<Box, Integer> {
         String sql;
         if (increase) {
 
-            sql = "UPDATE box set rentprice = 1 " +
-                    "WHERE box.rentprice < 1; \n" +
-                    "UPDATE box set rentprice = rentprice * ? ";
-
+            sql = "UPDATE box set rentprice = rentprice * ? ";
 
         } else {
-            sql = "UPDATE box set rentprice = rentprice / ?; \n" +
-                    "UPDATE box set rentprice = 1 " +
-                    "WHERE box.rentprice < 1";
-
-
+            sql = "UPDATE box set rentprice = rentprice / ?";
 
         }
         connection.ifPresent(conn -> {
