@@ -2,6 +2,7 @@ package edu.rsatu.api.panels.info;
 
 import edu.rsatu.api.MainFrame;
 import edu.rsatu.api.panels.MainPanel;
+import edu.rsatu.garage.DocsHelper;
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Client;
@@ -22,6 +23,10 @@ import javax.swing.SwingConstants;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -340,9 +345,46 @@ public class ClientsInfoPanel extends MainPanel {
 
         JButton cancel = new JButton("Назад");
         buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> parent.setMainPanel(this));
+
+        JButton getDoc = new JButton("Получить спраку в формате docx");
+        buttonsPanel.add(getDoc);
+        getDoc.addActionListener(new ClientsNotesListener(clientsX, text));
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
         return mainPanel;
+    }
+
+    private class ClientsNotesListener implements ActionListener {
+
+        private List<Client> clients;
+        private String title;
+
+        public ClientsNotesListener(List<Client> clients, String title) {
+            this.clients = clients;
+            this.title = title;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            List<List<String>> records = new ArrayList<>();
+            List<String> caption = new ArrayList<>();
+            caption.add("Фамилия");
+            caption.add("Адрес");
+            records.add(caption);
+            for (Client client : clients) {
+                List<String> record = new ArrayList<>();
+                record.add(client.getSurname());
+                record.add(client.getAddress());
+                records.add(record);
+            }
+            String filename = "Справка_клиенты_" + LocalDateTime.now().format(DocsHelper.DATE_TIME_FORMATTER) +".docx";
+            try {
+                DocsHelper.generateNote(title, records, filename);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

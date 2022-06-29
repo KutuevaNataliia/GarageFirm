@@ -224,7 +224,7 @@ public class ModelsInfoPanel extends MainPanel {
         private List<Model> models;
         private String title;
 
-        public ModelNotesListener(List<Model> models, String title) {
+        private ModelNotesListener(List<Model> models, String title) {
             this.models = models;
             this.title = title;
         }

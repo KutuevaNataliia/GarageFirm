@@ -2,8 +2,8 @@ package edu.rsatu.api.panels.info;
 
 import edu.rsatu.api.MainFrame;
 import edu.rsatu.api.panels.MainPanel;
+import edu.rsatu.garage.DocsHelper;
 import edu.rsatu.garage.entities.Box;
-import edu.rsatu.garage.entities.Client;
 import edu.rsatu.garage.entities.Model;
 
 import javax.swing.BorderFactory;
@@ -19,6 +19,10 @@ import javax.swing.SwingConstants;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -212,14 +216,8 @@ public class BoxesInfoPanel extends MainPanel {
 
 
         for (Box box : boxesX) {
-            Client client = informationController.getClientForBox(box);
-            String cliName = "-";
-            if (client != null) {
-                cliName = client.getSurname();
-            }
-
             listModel.add(listModel.getSize(), "Бокс №" + box.getId() + "       " + "цена аренды: " + box.getRentPrice() +
-                    " Р" + "       " + "владелец: " + cliName);
+                    " Р");
         }
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 10, 20));
@@ -238,7 +236,40 @@ public class BoxesInfoPanel extends MainPanel {
 
         JButton getDoc = new JButton("Получить спраку в формате docx");
         buttonsPanel.add(getDoc);
+        getDoc.addActionListener(new BoxesNotesActionListener(boxesX, text));
 
         return mainPanel;
+    }
+
+    private class BoxesNotesActionListener implements ActionListener {
+
+        private List<Box> boxes;
+        private String title;
+
+        public BoxesNotesActionListener(List<Box> boxes, String title) {
+            this.boxes = boxes;
+            this.title = title;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            List<List<String>> records = new ArrayList<>();
+            List<String> caption = new ArrayList<>();
+            caption.add("Бокс №");
+            caption.add("Суточная стоимость аренды, руб.");
+            records.add(caption);
+            for (Box box : boxes) {
+                List<String> record = new ArrayList<>();
+                record.add("" + box.getId());
+                record.add("" + box.getRentPrice());
+                records.add(record);
+            }
+            String filename = "Справка_боксы_" + LocalDateTime.now().format(DocsHelper.DATE_TIME_FORMATTER) +".docx";
+            try {
+                DocsHelper.generateNote(title, records, filename);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
