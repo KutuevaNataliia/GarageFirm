@@ -349,7 +349,7 @@ public class ClientsInfoPanel extends MainPanel {
 
         JButton getDoc = new JButton("Получить спраку в формате docx");
         buttonsPanel.add(getDoc);
-        getDoc.addActionListener(new ClientsNotesListener(clientsX, text));
+        getDoc.addActionListener(new ClientsNotesListener(clientsX, chooseBox.getText()));
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
 
