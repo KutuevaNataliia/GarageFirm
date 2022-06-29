@@ -1,6 +1,7 @@
-package edu.rsatu.api.panels;
+package edu.rsatu.api.panels.administration;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.MainPanel;
 import edu.rsatu.garage.controller.AdministrationController;
 import edu.rsatu.garage.controller.InformationController;
 import edu.rsatu.garage.entities.Box;

@@ -1,13 +1,13 @@
 package edu.rsatu.api;
 
-import edu.rsatu.api.panels.BoxesInfoPanel;
-import edu.rsatu.api.panels.ChangePricePanel;
-import edu.rsatu.api.panels.ClientsInfoPanel;
-import edu.rsatu.api.panels.CloseBoxPanel;
-import edu.rsatu.api.panels.DeleteModelPanel;
-import edu.rsatu.api.panels.ModelsInfoPanel;
-import edu.rsatu.api.panels.NewBoxPanel;
-import edu.rsatu.api.panels.NewModelPanel;
+import edu.rsatu.api.panels.info.BoxesInfoPanel;
+import edu.rsatu.api.panels.administration.ChangePricePanel;
+import edu.rsatu.api.panels.info.ClientsInfoPanel;
+import edu.rsatu.api.panels.administration.CloseBoxPanel;
+import edu.rsatu.api.panels.administration.DeleteModelPanel;
+import edu.rsatu.api.panels.info.ModelsInfoPanel;
+import edu.rsatu.api.panels.administration.NewBoxPanel;
+import edu.rsatu.api.panels.administration.NewModelPanel;
 import edu.rsatu.api.panels.rent.RentClosePanel;
 import edu.rsatu.api.panels.rent.RentCommonPanel;
 

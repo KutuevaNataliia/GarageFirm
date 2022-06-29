@@ -1,6 +1,7 @@
-package edu.rsatu.api.panels;
+package edu.rsatu.api.panels.info;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.MainPanel;
 import edu.rsatu.garage.DocsHelper;
 import edu.rsatu.garage.entities.Box;
 import edu.rsatu.garage.entities.Model;

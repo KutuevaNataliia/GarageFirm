@@ -1,6 +1,7 @@
-package edu.rsatu.api.panels;
+package edu.rsatu.api.panels.administration;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.MainPanel;
 import edu.rsatu.garage.entities.Car;
 import edu.rsatu.garage.entities.Model;
 
