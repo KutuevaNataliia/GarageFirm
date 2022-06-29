@@ -6,7 +6,6 @@ import edu.rsatu.api.panels.MainPanel;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -87,27 +86,28 @@ public class ChangePricePanel extends MainPanel {
         save.addActionListener(e -> {
 
             String str = text.getText();
-            if (!str.equals("")) {
-                Double mult = null;
+            if (!str.isEmpty()) {
                 try {
-                    mult = Double.parseDouble(str.trim());
+                    double mult = Double.parseDouble(str.trim());
+                    if (mult <= 1) {
+                        JOptionPane.showMessageDialog(parent, "Число должно быть больше 1");
+                    } else {
+                        if (increase.isSelected()) {
+                            administrationController.increaseBoxPrices(mult);
+
+                            JOptionPane.showMessageDialog(parent,
+                                    "<html><i>Цена аренды всех боксов была увеличена в " + str + " раз</i>");
+                        } else if (decrease.isSelected()) {
+                            administrationController.decreaseBoxPrices(mult);
+
+                            JOptionPane.showMessageDialog(parent,
+                                    "<html><i>Цена аренды всех боксов была уменьшена в " + str + " раз</i>");
+                        }
+
+                    }
                 } catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(parent,
                             "<html><i>Число должно быть вещественным</i>");
-                }
-                if (!mult.equals(null)) {
-                    if (increase.isSelected()) {
-                        administrationController.increaseBoxPrices(mult);
-
-                        JOptionPane.showMessageDialog(parent,
-                                "<html><i>Цена аренды всех боксов была увеличена в " + str + " раз</i>");
-                    } else if (decrease.isSelected()) {
-                        administrationController.decreaseBoxPrices(mult);
-
-                        JOptionPane.showMessageDialog(parent,
-                                "<html><i>Цена аренды всех боксов была уменьшена в " + str + " раз</i>");
-                    }
-
                 }
             } else {
                 JOptionPane.showMessageDialog(parent,
