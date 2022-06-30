@@ -116,7 +116,7 @@ public class InformationControllerTest {
         administrationController.addBox(1,2500.00,models);
         administrationController.addBox(2,3000.00,List.of(models.get(0)));
         List<Box> boxes = informationController.getAllBoxes();
-        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
@@ -180,12 +180,12 @@ public class InformationControllerTest {
         AdministrationController administrationController = new AdministrationController();
         InformationController informationController = new InformationController();
 
-        rentController.addClient("Sharov","AdressSharova");
-        rentController.addClient("Zadorina","AdressZadorinoy");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
+        rentController.addClient("Маркова","г. Рыбинск, ул. Герцена, д. 12, кв. 24");
 
         List<Client> clients = informationController.getAllClients();
-        assertEquals(clients.get(0).getSurname(),"Sharov");
-        assertEquals(clients.get(1).getSurname(),"Zadorina");
+        assertEquals(clients.get(0).getSurname(),"Шишкин");
+        assertEquals(clients.get(1).getSurname(),"Маркова");
     }
 
     @Test
@@ -195,13 +195,13 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00, models);
         Box box = boxesDao.get(1).orElse(null);
-        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
         rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
         Client clientF = informationController.getClientForBox(box);
-        assertEquals(clientF.getSurname(), "Sharov");
+        assertEquals(clientF.getSurname(), "Шишкин");
 
     }
 
@@ -212,13 +212,13 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
         rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
         List<Client> clientsF = informationController.getClientsForModel(models.get(0));
-        assertEquals(clientsF.get(0).getSurname(), "Sharov");
+        assertEquals(clientsF.get(0).getSurname(), "Шишкин");
     }
 
     @Test
@@ -228,14 +228,14 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
         rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
         LocalDate nowDate = LocalDate.of(2022, 10, 19);
         List<Client> clientsF = informationController.getClientsForDate(nowDate);
-        assertEquals(clientsF.get(0).getSurname(), "Sharov");
+        assertEquals(clientsF.get(0).getSurname(), "Шишкин");
     }
 
     @Test
@@ -245,14 +245,14 @@ public class InformationControllerTest {
         List<Model> models = informationController.getAllModels();
         administrationController.addBox(1,2500.00,models);
         Box box = boxesDao.get(1).orElse(null);
-        rentController.addClient("Sharov","AdressSharova");
+        rentController.addClient("Шишкин","г.Рыбинск, ул. Радищева, д. 5, кв. 15");
         List<Client> clients = informationController.getAllClients();
         LocalDate rentStartDate = LocalDate.of(2022, 6, 19);
         LocalDate rentEndDate = LocalDate.of(2022, 8, 19);
         rentController.addCar(clients.get(0),models.get(0),box,"s111ss",rentStartDate,rentEndDate);
         LocalDate nowDate = LocalDate.of(2022, 10, 19);
         List<Client> clientsF = informationController.getClientsForModelDate(models.get(0),nowDate);
-        assertEquals(clientsF.get(0).getSurname(), "Sharov");
+        assertEquals(clientsF.get(0).getSurname(), "Шишкин");
     }
 
 }

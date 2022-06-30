@@ -1,6 +1,7 @@
 package edu.rsatu.api.panels.rent;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.DefaultPanel;
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Client;
 
@@ -130,8 +131,6 @@ public class RentClientPanel extends RentIssuesPanel {
         });
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
-        cancel.addActionListener(e -> {
-
-        });
+        cancel.addActionListener(e -> parent.setMainPanel(new DefaultPanel()));
     }
 }

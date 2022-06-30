@@ -1,6 +1,7 @@
 package edu.rsatu.api.panels.rent;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.DefaultPanel;
 import edu.rsatu.api.panels.MainPanel;
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Box;
@@ -76,22 +77,30 @@ public class RentClosePanel extends MainPanel {
         add(info, ic);
 
         findAuto.addActionListener(e -> {
-            String number = autoNumber.getText();
+            String number = autoNumber.getText().trim();
             if (RentController.checkNumber2(number)) {
                 Car car = informationController.getCarByNumber(number);
-                rentController.setCurrentCar(car);
-                Client client = informationController.getClientById(car.getClientId());
-                rentController.setCurrentClient(client);
-                Model model = informationController.getModelById(car.getModelId());
-                rentController.setCurrentModel(model);
-                Box box = informationController.getBoxByNumber(car.getBoxId());
-                rentController.setCurrentBox(box);
-                info.setText("<html>Клиент: " + client.getSurname() + " Адрес: " + client.getAddress() +
-                        "<br/>Автомобиль марки: " + model.getName() +
-                        "<br/>находится в боксе: " + box.getId() +
-                        "<br/>с " + car.getRentStartDate().toString() +
-                        "<br/>Срок окончания аренды: " + car.getRentEndDate().toString() + "</html>");
+                if (car == null) {
+                    rentController.setCurrentCar(null);
+                    info.setText("");
+                    JOptionPane.showMessageDialog(parent, "Автомобиль с указанным номером не найден");
+                } else {
+                    rentController.setCurrentCar(car);
+                    Client client = informationController.getClientById(car.getClientId());
+                    rentController.setCurrentClient(client);
+                    Model model = informationController.getModelById(car.getModelId());
+                    rentController.setCurrentModel(model);
+                    Box box = informationController.getBoxByNumber(car.getBoxId());
+                    rentController.setCurrentBox(box);
+                    info.setText("<html>Клиент: " + client.getSurname() + " Адрес: " + client.getAddress() +
+                            "<br/>Автомобиль марки: " + model.getName() +
+                            "<br/>находится в боксе: " + box.getId() +
+                            "<br/>с " + car.getRentStartDate().toString() +
+                            "<br/>Срок окончания аренды: " + car.getRentEndDate().toString() + "</html>");
+                }
             } else {
+                rentController.setCurrentCar(null);
+                info.setText("");
                 JOptionPane.showMessageDialog(this, "Неправильный формат номера автомобиля");
             }
         });
@@ -110,6 +119,7 @@ public class RentClosePanel extends MainPanel {
         buttonsPanel.add(save);
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> parent.setMainPanel(new DefaultPanel()));
 
         save.addActionListener(new DeleteCarListener(rentController));
 
@@ -134,7 +144,10 @@ public class RentClosePanel extends MainPanel {
                 if (allCars.size() == 1) {
                     rentController.deleteClient(client);
                 }
-                JOptionPane.showMessageDialog(null, "Аренда закрыта");
+                parent.setMainPanel(new DefaultPanel());
+                JOptionPane.showMessageDialog(parent, "Аренда закрыта");
+            } else {
+                JOptionPane.showMessageDialog(parent, "Невозможно закрыть аренду, т.к. не найден автомобиль");
             }
         }
     }

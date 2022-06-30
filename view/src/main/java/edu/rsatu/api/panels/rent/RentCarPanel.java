@@ -1,6 +1,7 @@
 package edu.rsatu.api.panels.rent;
 
 import edu.rsatu.api.MainFrame;
+import edu.rsatu.api.panels.DefaultPanel;
 import edu.rsatu.garage.DocsHelper;
 import edu.rsatu.garage.controller.RentController;
 import edu.rsatu.garage.entities.Car;
@@ -145,6 +146,7 @@ public class RentCarPanel extends RentIssuesPanel {
         buttonsPanel.add(save);
         JButton cancel = new JButton("Отмена");
         buttonsPanel.add(cancel);
+        cancel.addActionListener(e -> parent.setMainPanel(new DefaultPanel()));
 
         save.addActionListener(new AddCarListener(rentController, autoText, startText, finishText));
     }
@@ -183,16 +185,16 @@ public class RentCarPanel extends RentIssuesPanel {
         public void actionPerformed(ActionEvent e) {
             String number = autoText.getText().trim();
             if (!RentController.checkNumber2(number)) {
-                JOptionPane.showMessageDialog(null, "Неправильный формат номера автомобиля");
+                JOptionPane.showMessageDialog(parent, "Неправильный формат номера автомобиля");
             } else {
                 Car oldCar = informationController.getCarByNumber(number);
                 if (oldCar != null) {
-                    JOptionPane.showMessageDialog(null, "Данный автомобиль уже находится в одном из боксов");
+                    JOptionPane.showMessageDialog(parent, "Данный автомобиль уже находится в одном из боксов");
                 } else {
                     LocalDate startRentDate = rentController.getDateFromString(startText.getText());
                     LocalDate endRentDate = rentController.getDateFromString(finishText.getText());
                     if (startRentDate == null || endRentDate == null) {
-                        JOptionPane.showMessageDialog(null, "Неправильно указана дата");
+                        JOptionPane.showMessageDialog(parent, "Неправильно указана дата");
                     } else {
                         try {
                             rentController.getInterval(startRentDate, endRentDate);
@@ -209,11 +211,12 @@ public class RentCarPanel extends RentIssuesPanel {
                             DocsHelper.generateReceipt(receiptNumber, number, client, sum, rentController.getCurrentBox().getId(),
                                     startRentDate, endRentDate);
                             rentController = new RentController();
-                            JOptionPane.showMessageDialog(null, "Аренда успешно оформлена");
+                            parent.setMainPanel(new DefaultPanel());
+                            JOptionPane.showMessageDialog(parent, "Аренда успешно оформлена");
                         } catch (DateException ex) {
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                            JOptionPane.showMessageDialog(parent, ex.getMessage());
                         } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(null, "Не удалось сформировать квитанцию");
+                            JOptionPane.showMessageDialog(parent, "Не удалось сформировать квитанцию");
                         }
                     }
                 }

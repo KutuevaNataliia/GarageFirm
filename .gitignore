@@ -4,3 +4,4 @@ target/
 *.txt
 *.docx
 *.png
+*.sql

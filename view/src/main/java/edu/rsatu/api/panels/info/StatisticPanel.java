@@ -86,11 +86,10 @@ public class StatisticPanel extends MainPanel {
         add(getDoc, dc);
 
         getDoc.addActionListener(e -> {
-            String chartFileName = "chart_" + LocalDateTime.now().format(DocsHelper.DATE_TIME_FORMATTER) + ".png";
             String filename = "статистика_" + LocalDateTime.now().format(DocsHelper.DATE_TIME_FORMATTER) + ".docx";
             try {
-                ChartUtils.saveChartAsPNG(new File(chartFileName), barChart, 450, 400);
-                DocsHelper.generateStatisticsNote(filename, chartFileName, averageInterval);
+                byte[] chartBytes = ChartUtils.encodeAsPNG(barChart.createBufferedImage(450, 400));
+                DocsHelper.generateStatisticsNote(filename, chartBytes, averageInterval);
             } catch (IOException | InvalidFormatException ex) {
                 ex.printStackTrace();
             }

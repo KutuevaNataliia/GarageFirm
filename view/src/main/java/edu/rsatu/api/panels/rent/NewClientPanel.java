@@ -64,6 +64,7 @@ public class NewClientPanel extends RentIssuesPanel {
         save.addActionListener(e -> {
             Client client = new Client(surname.getText(), address.getText());
             rentController.getClientsWithoutCar().add(client);
+            rentCommonPanel.setRentMutablePanel(new RentClientPanel(parent, rentCommonPanel, rentController));
             parent.setMainPanel(rentCommonPanel);
             JOptionPane.showMessageDialog(this, "Клиент успешно добавлен");
         });

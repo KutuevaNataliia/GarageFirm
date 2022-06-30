@@ -87,8 +87,6 @@ public class DeleteModelPanel extends MainPanel {
                 JOptionPane.showMessageDialog(this, "Обслуживание марки прекращено");
             }
         });
-        JButton cancel = new JButton("Отмена");
-        buttonsPanel.add(cancel);
 
         setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
     }

@@ -16,6 +16,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTHMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -299,7 +301,7 @@ public class DocsHelper {
         document.close();
     }
 
-    public static void generateStatisticsNote(String filename, String chartFileName, double averageInterval) throws IOException, InvalidFormatException {
+    public static void generateStatisticsNote(String filename, byte[] chartBytes, double averageInterval) throws IOException, InvalidFormatException {
         XWPFDocument document = new XWPFDocument();
         XWPFParagraph caption = document.createParagraph();
         caption.setAlignment(ParagraphAlignment.CENTER);
@@ -321,9 +323,8 @@ public class DocsHelper {
         XWPFParagraph chart = document.createParagraph();
         chart.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun chartRun = chart.createRun();
-        Path imagePath = Paths.get(chartFileName);
-        chartRun.addPicture(Files.newInputStream(imagePath),
-                XWPFDocument.PICTURE_TYPE_PNG, imagePath.getFileName().toString(),
+        chartRun.addPicture(new ByteArrayInputStream(chartBytes),
+                XWPFDocument.PICTURE_TYPE_PNG, "chart",
                 Units.toEMU(450), Units.toEMU(400));
 
         FileOutputStream out = new FileOutputStream(filename);
